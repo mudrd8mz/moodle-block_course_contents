@@ -30,7 +30,9 @@
 .block_course_contents .section-title {
 }
 
-.block_course_contents  {
+.block_course_contents a.dimmed:link,
+.block_course_contents a.dimmed:visited {
+    color:#AAAAAA;
 }
 
 .block_course_contents {
