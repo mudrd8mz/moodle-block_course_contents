@@ -17,19 +17,8 @@ class block_course_contents extends block_base {
         $this->version = 2009021700;
     }
 
-    /*
-    function instance_config($instance) {
-        parent::instance_config($instance);
-    }
-     */
-
     function applicable_formats() {
-        return (array(
-            'course-view-weeks'     => true, 
-            'course-view-topics'    => true, 
-            'course-edit-weeks'     => true, 
-            'course-edit-topics'    => true,
-        ));
+        return array('course' => true);
     }
 
     function get_content() {
@@ -44,6 +33,12 @@ class block_course_contents extends block_base {
         $this->content = new stdClass;
         $this->content->footer = '';
         $this->content->text   = '';
+
+        if (empty($this->instance->pageid)) { // sticky
+            if (!empty($COURSE)) {
+                $this->instance->pageid = $COURSE->id;
+            }
+        }
 
         if (empty($this->instance)) {
             return $this->content;
