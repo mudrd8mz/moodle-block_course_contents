@@ -68,7 +68,7 @@ class block_course_contents extends block_base {
         if (!empty($display)) {
             $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'&amp;'.$sectionname.'=';
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'#section-';
+            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'#sectionblock-';
         }
 
         $sql = "SELECT section, summary, visible
