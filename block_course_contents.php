@@ -1,11 +1,10 @@
-<?PHP //$Id$
+<?PHP
 
 /**
  * Block course_contents - generates a course contents based on the section descriptions
  * 
  * @uses block_base
  * @package block_course_contents
- * @version $Id$
  * @copyright 2009
  * @author David Mudrak <david.mudrak@gmail.com> 
  * @license GNU Public License {@link http://www.gnu.org/copyleft/gpl.html}
@@ -13,8 +12,7 @@
 class block_course_contents extends block_base {
 
     function init() {
-        $this->title = get_string('blockname', 'block_course_contents');
-        $this->version = 2009021700;
+        $this->title = get_string('pluginname', 'block_course_contents');
     }
 
     function applicable_formats() {
@@ -22,7 +20,7 @@ class block_course_contents extends block_base {
     }
 
     function get_content() {
-        global $CFG, $USER, $COURSE;
+        global $CFG, $USER, $COURSE, $DB;
 
         $highlight = 0;
 
@@ -47,7 +45,7 @@ class block_course_contents extends block_base {
         if ($this->instance->pageid == $COURSE->id) {
             $course = $COURSE;
         } else {
-            $course = get_record('course', 'id', $this->instance->pageid);
+            $course = $DB->get_record('course', array('id'=>$this->instance->pageid));
         }
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
@@ -63,7 +61,7 @@ class block_course_contents extends block_base {
         }
 
         if (!empty($USER->id)) {
-            $display = get_field('course_display', 'display', 'course', $this->instance->pageid, 'userid', $USER->id);
+            $display = $DB->get_field('course_display', 'display', array('course'=>$this->instance->pageid, 'userid'=>$USER->id));
         }
         if (!empty($display)) {
             $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'&amp;'.$sectionname.'=';
@@ -72,12 +70,12 @@ class block_course_contents extends block_base {
         }
 
         $sql = "SELECT section, summary, visible
-                  FROM {$CFG->prefix}course_sections
-                 WHERE course = $course->id AND
-                       section < ".($course->numsections+1)."
+                  FROM {course_sections}
+                 WHERE course = ? AND
+                       section < ?
               ORDER BY section";
 
-        if ($sections = get_records_sql($sql)) {
+        if ($sections = $DB->get_records_sql($sql, array($course->id, $course->numsections+1))) {
             $text = '<ul class="section-list">';
             foreach ($sections as $section) {
                 $i = $section->section;
@@ -166,5 +164,3 @@ class block_course_contents extends block_base {
 
 
 }
-
-?>
