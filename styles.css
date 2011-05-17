@@ -1,5 +1,5 @@
 .block_course_contents .section-list {
-    list-style-image: url("<?php echo $CFG->wwwroot.'/pix/b.gif'; ?>");
+    list-style-image: url([[pix:b]]);
     margin: 0px;
     padding-left: 20px;
 }
