@@ -30,16 +30,25 @@ defined('MOODLE_INTERNAL') || die();
  */
 class block_course_contents extends block_base {
 
-    function init() {
+    /**
+     * Initializes the block, called by the constructor
+     */
+    public function init() {
         $this->title = get_string('pluginname', 'block_course_contents');
     }
 
-    function applicable_formats() {
-        return array('course' => true);
+    /**
+     * Which page types this block may appear on
+     */
+    public function applicable_formats() {
+        return (array('course-view-weeks' => true, 'course-view-topics' => true));
     }
 
-    function get_content() {
-        global $CFG, $USER, $COURSE, $DB;
+    /**
+     * Populate this block's content object
+     */
+    public function get_content() {
+        global $CFG, $USER, $DB;
 
         $highlight = 0;
 
@@ -47,45 +56,62 @@ class block_course_contents extends block_base {
             return $this->content;
         }
 
-        $this->content = new stdClass;
+        $this->content = new stdClass();
         $this->content->footer = '';
         $this->content->text   = '';
-
-        if (empty($this->instance->pageid)) { // sticky
-            if (!empty($COURSE)) {
-                $this->instance->pageid = $COURSE->id;
-            }
-        }
 
         if (empty($this->instance)) {
             return $this->content;
         }
 
-        if ($this->instance->pageid == $COURSE->id) {
-            $course = $COURSE;
-        } else {
-            $course = $DB->get_record('course', array('id'=>$this->instance->pageid));
-        }
+        $course = $this->page->course;
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
         if ($course->format == 'weeks' or $course->format == 'weekscss') {
             $highlight = ceil((time()-$course->startdate)/604800);
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
             $sectionname = 'week';
-        }
-        else if ($course->format == 'topics') {
+        } else if ($course->format == 'topics') {
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
             $sectionname = 'topic';
         }
 
-        if (!empty($USER->id)) {
-            $display = $DB->get_field('course_display', 'display', array('course'=>$this->instance->pageid, 'userid'=>$USER->id));
-        }
-        if (!empty($display)) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'&amp;'.$sectionname.'=';
+        // Warning - hack ahead! Because this method is executed as a part of
+        // core_renderer->header() call, the course format plugin did not have a chance yet
+        // to update course_display table according the passed 'topic' or 'week' HTTP param.
+        // In order to achieve the same effect as in 1.9 (where the block content was populated
+        // after the format), we must observe the HTTP params directly here...
+
+        $topic = optional_param('topic', -1, PARAM_INT);  // 0 to show all, >0 show particular section
+        $week  = optional_param('week', -1, PARAM_INT);   // dtto
+
+        if ($topic == 0 or $week == 0) {
+            // the course format will set the course display to show all sections
+            $showallsections = true;
+        } else if ($topic > 0 or $week > 0) {
+            // the course format will set the course display to show one particular section
+            $showallsections = false;
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'#sectionblock-';
+            // the course display won't change, let us read its current value from DB
+            if (!empty($USER->id)) {
+                $display = $DB->get_field('course_display', 'display', array('course' => $course->id, 'userid' => $USER->id));
+                if (empty($display)) {
+                    $showallsections = true;
+                } else {
+                    $showallsections = false;
+                }
+            } else {
+                $showallsections = true;
+            }
+        }
+
+        // depending on whether there is just one section displayed or all sections
+        // displayed, prepare the base URL to jump to
+        if ($showallsections) {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#section-';
+        } else {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&amp;'.$sectionname.'=';
         }
 
         $sql = "SELECT section, summary, visible
