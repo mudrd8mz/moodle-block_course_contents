@@ -111,17 +111,17 @@ class block_course_contents extends block_base {
         if ($showallsections) {
             $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#section-';
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&amp;'.$sectionname.'=';
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&'.$sectionname.'=';
         }
 
-        $sql = "SELECT section, summary, visible
+        $sql = "SELECT section, name, summary, summaryformat, visible
                   FROM {course_sections}
                  WHERE course = ? AND
                        section < ?
               ORDER BY section";
 
         if ($sections = $DB->get_records_sql($sql, array($course->id, $course->numsections+1))) {
-            $text = '<ul class="section-list">';
+            $text = html_writer::start_tag('ul', array('class' => 'section-list'));
             foreach ($sections as $section) {
                 $i = $section->section;
                 if (!isset($sections[$i]) or ($i == 0)) {
@@ -131,29 +131,36 @@ class block_course_contents extends block_base {
                 if (!$isvisible and !has_capability('moodle/course:update', $context)) {
                     continue;
                 }
-                $title = $this->extract_title($section->summary);
+                if (empty($section->name)) {
+                    $summary = format_text($section->summary, $section->summaryformat,
+                        array('para' => false, 'context' => $context));
+                    $title = $this->extract_title($summary);
+                } else {
+                    $title = $section->name;
+                }
                 if (empty($title)) {
                     $title = get_string('emptysummary', 'block_course_contents', $i);
                 }
+                $title = s($title);
                 $style = ($isvisible) ? '' : ' class="dimmed"';
                 $odd = $i % 2;
                 if ($i == $highlight) {
-                    $text .= "<li class=\"section-item current r$odd\">";
+                    $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
                 } else {
-                    $text .= "<li class=\"section-item r$odd\">";
+                    $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
                 }
-                $text .= "<a href=\"$link$i\"$style>";
-                $text .= "<span class=\"section-number\">$i </span>";
-                $text .= "<span class=\"section-title\">$title</span>";
-                $text .= "</a>";
-                $text .= "</li>\n";
+                $text .= html_writer::link($link.$i,
+                            html_writer::tag('span', $i.' ', array('class' => 'section-number')).
+                            html_writer::tag('span', $title, array('class' => 'section-title')),
+                            array('class' => $isvisible ? '' : 'dimmed'));
+                $text .= html_writer::end_tag('li');
             }
-            $text .= '</ul>';
+            $text .= html_writer::end_tag('ul');
             if ($highlight and isset($sections[$highlight])) {
                 $isvisible = $sections[$highlight]->visible;
                 if ($isvisible or has_capability('moodle/course:update', $context)) {
-                    $style = ($isvisible) ? '' : ' class="dimmed"';
-                    $this->content->footer = "<a href=\"$link$highlight\"$style>$linktext</a>";
+                    $this->content->footer = html_writer::link($link.$highlight, $linktext,
+                            array('class' => $isvisible ? '' : 'dimmed'));
                 }
             }
         }
@@ -163,20 +170,19 @@ class block_course_contents extends block_base {
     }
 
 
-    
     /**
      * Given a section summary, exctract a text suitable as a section title
-     * 
+     *
      * @param string $summary Section summary as returned from database (no slashes)
      * @return string Section title
      */
-    function extract_title($summary) {
+    private function extract_title($summary) {
         global $CFG;
         require_once(dirname(__FILE__).'/lib/simple_html_dom.php');
 
-        $node = new simple_html_dom;
+        $node = new simple_html_dom();
         $node->load($summary);
-        return $this->_node_plain_text($node);
+        return $this->node_plain_text($node);
     }
 
 
@@ -184,12 +190,11 @@ class block_course_contents extends block_base {
      * Recursively find the first suitable plaintext from the HTML DOM.
      *
      * Internal private function called only from {@link extract_title()}
-     * 
-     * @param mixed $node Current root node
-     * @access private
-     * @return void str 
+     *
+     * @param simple_html_dom $node Current root node
+     * @return string
      */
-    private function _node_plain_text($node) {
+    private function node_plain_text($node) {
         if ($node->nodetype == HDOM_TYPE_TEXT) {
             $t = trim($node->plaintext);
             if (!empty($t)) {
@@ -198,14 +203,11 @@ class block_course_contents extends block_base {
         }
         $t = '';
         foreach ($node->nodes as $n) {
-            $t = $this->_node_plain_text($n);
+            $t = $this->node_plain_text($n);
             if (!empty($t)) {
                 break;
             }
         }
         return $t;
     }
-
-
-
 }
