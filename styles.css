@@ -1,10 +1,10 @@
 .block_course_contents .section-list {
-    list-style-image: url([[pix:b]]);
     margin: 0px;
     padding-left: 20px;
 }
 
 .block_course_contents .section-item {
+    list-style-image: url([[pix:b]]);
     margin-bottom: 6pt;
 }
 
