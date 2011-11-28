@@ -1,13 +1,12 @@
-<?PHP //$Id$
+<?PHP
 
 /**
  * Block course_contents - generates a course contents based on the section descriptions
- * 
+ *
  * @uses block_base
  * @package block_course_contents
- * @version $Id$
  * @copyright 2009
- * @author David Mudrak <david.mudrak@gmail.com> 
+ * @author David Mudrak <david.mudrak@gmail.com>
  * @license GNU Public License {@link http://www.gnu.org/copyleft/gpl.html}
  */
 class block_course_contents extends block_base {
@@ -30,45 +29,44 @@ class block_course_contents extends block_base {
             return $this->content;
         }
 
-        $this->content = new stdClass;
+        $this->content = new stdClass();
         $this->content->footer = '';
         $this->content->text   = '';
 
-        if (empty($this->instance->pageid)) { // sticky
-            if (!empty($COURSE)) {
-                $this->instance->pageid = $COURSE->id;
-            }
-        }
-
-        if (empty($this->instance)) {
+        if ($COURSE->id == SITEID) {
+            // there are no sections on the front page course
             return $this->content;
         }
 
-        if ($this->instance->pageid == $COURSE->id) {
-            $course = $COURSE;
-        } else {
-            $course = get_record('course', 'id', $this->instance->pageid);
-        }
+        $course = $COURSE;
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
         if ($course->format == 'weeks' or $course->format == 'weekscss') {
             $highlight = ceil((time()-$course->startdate)/604800);
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
             $sectionname = 'week';
-        }
-        else if ($course->format == 'topics') {
+
+        } else if ($course->format == 'scorm' or $course->format == 'social') {
+            // this formats do not have sections at all, no need for this block there
+            return $this->content;
+
+        } else {
+            // anything else defaults to 'topics'
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
             $sectionname = 'topic';
         }
 
-        if (!empty($USER->id)) {
-            $display = get_field('course_display', 'display', 'course', $this->instance->pageid, 'userid', $USER->id);
-        }
-        if (!empty($display)) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'&amp;'.$sectionname.'=';
+        if (isset($USER->display[$course->id])) {
+            $displaysection = $USER->display[$course->id];
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'#sectionblock-';
+            $displaysection = course_set_display($course->id, 0);
+        }
+
+        if ($displaysection) {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&amp;'.$sectionname.'=';
+        } else {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#sectionblock-';
         }
 
         $sql = "SELECT section, summary, visible
@@ -99,10 +97,14 @@ class block_course_contents extends block_base {
                 } else {
                     $text .= "<li class=\"section-item r$odd\">";
                 }
-                $text .= "<a href=\"$link$i\"$style>";
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= "<a href=\"$link$i\"$style>";
+                }
                 $text .= "<span class=\"section-number\">$i </span>";
                 $text .= "<span class=\"section-title\">$title</span>";
-                $text .= "</a>";
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= "</a>";
+                }
                 $text .= "</li>\n";
             }
             $text .= '</ul>';
@@ -119,11 +121,9 @@ class block_course_contents extends block_base {
         return $this->content;
     }
 
-
-    
     /**
-     * Given a section summary, exctract a text suitable as a section title
-     * 
+     * Given a section summary, extract a text suitable as a section title
+     *
      * @param string $summary Section summary as returned from database (no slashes)
      * @return string Section title
      */
@@ -136,15 +136,14 @@ class block_course_contents extends block_base {
         return $this->_node_plain_text($node);
     }
 
-
     /**
      * Recursively find the first suitable plaintext from the HTML DOM.
      *
      * Internal private function called only from {@link extract_title()}
-     * 
+     *
      * @param mixed $node Current root node
      * @access private
-     * @return void str 
+     * @return void str
      */
     private function _node_plain_text($node) {
         if ($node->nodetype == HDOM_TYPE_TEXT) {
@@ -162,9 +161,5 @@ class block_course_contents extends block_base {
         }
         return $t;
     }
-
-
-
 }
 
-?>
