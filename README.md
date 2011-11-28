@@ -13,6 +13,8 @@ first one will be used. If the summary is empty, a customizable text "Unit X"
 content of the first non-empty HTML DOM node from the section summary is used
 as the summary title.
 
+This block requires PHP 5.
+
 Maintainer
 ----------
 
@@ -22,5 +24,5 @@ The block has been written and is currently maintained by David Mudrak.
 Documentation
 -------------
 
-See [the page at Moodle wiki](http://docs.moodle.org/en/Course_contents_block)
+See [the page at Moodle wiki](http://docs.moodle.org/19/en/Course_contents_block)
 for more details.

@@ -37,12 +37,3 @@
 
 .block_course_contents {
 }
-
-.block_course_contents {
-}
-
-.block_course_contents {
-}
-
-.block_course_contents {
-}
