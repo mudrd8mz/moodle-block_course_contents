@@ -22,5 +22,5 @@ The block has been written and is currently maintained by David Mudrak.
 Documentation
 -------------
 
-See [the page at Moodle wiki](http://docs.moodle.org/en/Course_contents_block)
+See [the page at Moodle wiki](http://docs.moodle.org/19/en/Course_contents_block)
 for more details.
