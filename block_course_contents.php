@@ -33,21 +33,12 @@ class block_course_contents extends block_base {
         $this->content->footer = '';
         $this->content->text   = '';
 
-        if (empty($this->instance->pageid)) { // sticky
-            if (!empty($COURSE)) {
-                $this->instance->pageid = $COURSE->id;
-            }
-        }
-
-        if (empty($this->instance)) {
+        if ($COURSE->id == SITEID) {
+            // there are no sections on the front page course
             return $this->content;
         }
 
-        if ($this->instance->pageid == $COURSE->id) {
-            $course = $COURSE;
-        } else {
-            $course = get_record('course', 'id', $this->instance->pageid);
-        }
+        $course = $COURSE;
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
         if ($course->format == 'weeks' or $course->format == 'weekscss') {
