@@ -46,7 +46,12 @@ class block_course_contents extends block_base {
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
             $sectionname = 'week';
 
-        } else if ($course->format == 'topics') {
+        } else if ($course->format == 'scorm' or $course->format == 'social') {
+            // this formats do not have sections at all, no need for this block there
+            return $this->content;
+
+        } else {
+            // anything else defaults to 'topics'
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
             $sectionname = 'topic';
