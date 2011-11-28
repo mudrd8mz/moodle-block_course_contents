@@ -1,11 +1,10 @@
-<?PHP //$Id$
+<?PHP
 
 /**
  * Block course_contents - generates a course contents based on the section descriptions
  *
  * @uses block_base
  * @package block_course_contents
- * @version $Id$
  * @copyright 2009
  * @author David Mudrak <david.mudrak@gmail.com>
  * @license GNU Public License {@link http://www.gnu.org/copyleft/gpl.html}
