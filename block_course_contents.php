@@ -53,12 +53,12 @@ class block_course_contents extends block_base {
         }
 
         if (!empty($USER->id)) {
-            $display = get_field('course_display', 'display', 'course', $this->instance->pageid, 'userid', $USER->id);
+            $display = get_field('course_display', 'display', 'course', $course->id, 'userid', $USER->id);
         }
         if (!empty($display)) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'&amp;'.$sectionname.'=';
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&amp;'.$sectionname.'=';
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$this->instance->pageid.'#sectionblock-';
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#sectionblock-';
         }
 
         $sql = "SELECT section, summary, visible
