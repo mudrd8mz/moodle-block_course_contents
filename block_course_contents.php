@@ -57,10 +57,13 @@ class block_course_contents extends block_base {
             $sectionname = 'topic';
         }
 
-        if (!empty($USER->id)) {
-            $display = get_field('course_display', 'display', 'course', $course->id, 'userid', $USER->id);
+        if (isset($USER->display[$course->id])) {
+            $displaysection = $USER->display[$course->id];
+        } else {
+            $displaysection = course_set_display($course->id, 0);
         }
-        if (!empty($display)) {
+
+        if ($displaysection) {
             $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&amp;'.$sectionname.'=';
         } else {
             $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#sectionblock-';
