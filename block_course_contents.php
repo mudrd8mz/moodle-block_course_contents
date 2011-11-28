@@ -2,12 +2,12 @@
 
 /**
  * Block course_contents - generates a course contents based on the section descriptions
- * 
+ *
  * @uses block_base
  * @package block_course_contents
  * @version $Id$
  * @copyright 2009
- * @author David Mudrak <david.mudrak@gmail.com> 
+ * @author David Mudrak <david.mudrak@gmail.com>
  * @license GNU Public License {@link http://www.gnu.org/copyleft/gpl.html}
  */
 class block_course_contents extends block_base {
@@ -120,10 +120,10 @@ class block_course_contents extends block_base {
     }
 
 
-    
+
     /**
      * Given a section summary, exctract a text suitable as a section title
-     * 
+     *
      * @param string $summary Section summary as returned from database (no slashes)
      * @return string Section title
      */
@@ -141,10 +141,10 @@ class block_course_contents extends block_base {
      * Recursively find the first suitable plaintext from the HTML DOM.
      *
      * Internal private function called only from {@link extract_title()}
-     * 
+     *
      * @param mixed $node Current root node
      * @access private
-     * @return void str 
+     * @return void str
      */
     private function _node_plain_text($node) {
         if ($node->nodetype == HDOM_TYPE_TEXT) {
