@@ -13,6 +13,8 @@ first one will be used. If the summary is empty, a customizable text "Unit X"
 content of the first non-empty HTML DOM node from the section summary is used
 as the summary title.
 
+This block requires PHP 5.
+
 Maintainer
 ----------
 
