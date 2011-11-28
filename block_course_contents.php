@@ -29,7 +29,7 @@ class block_course_contents extends block_base {
             return $this->content;
         }
 
-        $this->content = new stdClass;
+        $this->content = new stdClass();
         $this->content->footer = '';
         $this->content->text   = '';
 
@@ -45,8 +45,8 @@ class block_course_contents extends block_base {
             $highlight = ceil((time()-$course->startdate)/604800);
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
             $sectionname = 'week';
-        }
-        else if ($course->format == 'topics') {
+
+        } else if ($course->format == 'topics') {
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
             $sectionname = 'topic';
@@ -109,10 +109,8 @@ class block_course_contents extends block_base {
         return $this->content;
     }
 
-
-
     /**
-     * Given a section summary, exctract a text suitable as a section title
+     * Given a section summary, extract a text suitable as a section title
      *
      * @param string $summary Section summary as returned from database (no slashes)
      * @return string Section title
@@ -125,7 +123,6 @@ class block_course_contents extends block_base {
         $node->load($summary);
         return $this->_node_plain_text($node);
     }
-
 
     /**
      * Recursively find the first suitable plaintext from the HTML DOM.
@@ -152,9 +149,5 @@ class block_course_contents extends block_base {
         }
         return $t;
     }
-
-
-
 }
 
-?>
