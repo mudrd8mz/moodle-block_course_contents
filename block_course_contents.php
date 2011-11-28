@@ -97,10 +97,14 @@ class block_course_contents extends block_base {
                 } else {
                     $text .= "<li class=\"section-item r$odd\">";
                 }
-                $text .= "<a href=\"$link$i\"$style>";
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= "<a href=\"$link$i\"$style>";
+                }
                 $text .= "<span class=\"section-number\">$i </span>";
                 $text .= "<span class=\"section-title\">$title</span>";
-                $text .= "</a>";
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= "</a>";
+                }
                 $text .= "</li>\n";
             }
             $text .= '</ul>';
