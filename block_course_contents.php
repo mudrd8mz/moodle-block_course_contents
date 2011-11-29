@@ -39,6 +39,7 @@ class block_course_contents extends block_base {
 
     /**
      * Which page types this block may appear on
+     * @return array
      */
     public function applicable_formats() {
         return (array('course-view-weeks' => true, 'course-view-topics' => true));
@@ -46,6 +47,7 @@ class block_course_contents extends block_base {
 
     /**
      * Populate this block's content object
+     * @return stdClass block content info
      */
     public function get_content() {
         global $CFG, $USER, $DB;
