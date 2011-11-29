@@ -135,7 +135,6 @@ class block_course_contents extends block_base {
                     $title = get_string('emptysummary', 'block_course_contents', $i);
                 }
                 $title = s($title);
-                $style = ($isvisible) ? '' : ' class="dimmed"';
                 $odd = $i % 2;
                 if ($i == $highlight) {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
