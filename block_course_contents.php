@@ -141,10 +141,13 @@ class block_course_contents extends block_base {
                 } else {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
                 }
-                $text .= html_writer::link($link.$i,
-                            html_writer::tag('span', $i.' ', array('class' => 'section-number')).
-                            html_writer::tag('span', $title, array('class' => 'section-title')),
-                            array('class' => $isvisible ? '' : 'dimmed'));
+                $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
+                         html_writer::tag('span', $title, array('class' => 'section-title'));
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= html_writer::link($link.$i, $title, array('class' => $isvisible ? '' : 'dimmed'));
+                } else {
+                    $text .= $title;
+                }
                 $text .= html_writer::end_tag('li');
             }
             $text .= html_writer::end_tag('ul');
