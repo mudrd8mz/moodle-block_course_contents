@@ -26,3 +26,4 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2011102900;
 $plugin->requires = 2010112400; // Moodle 2.0
+$plugin->component = 'block_course_contents';
