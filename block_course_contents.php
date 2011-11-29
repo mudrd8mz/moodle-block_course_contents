@@ -39,6 +39,7 @@ class block_course_contents extends block_base {
 
     /**
      * Which page types this block may appear on
+     * @return array
      */
     public function applicable_formats() {
         return (array('course-view-weeks' => true, 'course-view-topics' => true));
@@ -46,6 +47,7 @@ class block_course_contents extends block_base {
 
     /**
      * Populate this block's content object
+     * @return stdClass block content info
      */
     public function get_content() {
         global $CFG, $USER, $DB;
@@ -67,11 +69,17 @@ class block_course_contents extends block_base {
         $course = $this->page->course;
         $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
-        if ($course->format == 'weeks' or $course->format == 'weekscss') {
+        if ($course->format == 'weeks') {
             $highlight = ceil((time()-$course->startdate)/604800);
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
             $sectionname = 'week';
-        } else if ($course->format == 'topics') {
+
+        } else if ($course->format == 'scorm' or $course->format == 'social') {
+            // this formats do not have sections at all, no need for this block there
+            return $this->content;
+
+        } else {
+            // anything else defaults to 'topics'
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
             $sectionname = 'topic';
@@ -83,35 +91,22 @@ class block_course_contents extends block_base {
         // In order to achieve the same effect as in 1.9 (where the block content was populated
         // after the format), we must observe the HTTP params directly here...
 
-        $topic = optional_param('topic', -1, PARAM_INT);  // 0 to show all, >0 show particular section
-        $week  = optional_param('week', -1, PARAM_INT);   // dtto
+        $displaysection = optional_param($sectionname, -1, PARAM_INT);  // 0 to show all, >0 show particular section
 
-        if ($topic == 0 or $week == 0) {
-            // the course format will set the course display to show all sections
-            $showallsections = true;
-        } else if ($topic > 0 or $week > 0) {
-            // the course format will set the course display to show one particular section
-            $showallsections = false;
+        if ($displaysection != -1) {
+            // somebody just requests a change
+        } else if (isset($USER->display[$course->id])) {
+            $displaysection = $USER->display[$course->id];
         } else {
-            // the course display won't change, let us read its current value from DB
-            if (!empty($USER->id)) {
-                $display = $DB->get_field('course_display', 'display', array('course' => $course->id, 'userid' => $USER->id));
-                if (empty($display)) {
-                    $showallsections = true;
-                } else {
-                    $showallsections = false;
-                }
-            } else {
-                $showallsections = true;
-            }
+            $displaysection = course_set_display($course->id, 0);
         }
 
         // depending on whether there is just one section displayed or all sections
         // displayed, prepare the base URL to jump to
-        if ($showallsections) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#section-';
-        } else {
+        if ($displaysection) {
             $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&'.$sectionname.'=';
+        } else {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#section-';
         }
 
         $sql = "SELECT section, name, summary, summaryformat, visible
@@ -142,17 +137,19 @@ class block_course_contents extends block_base {
                     $title = get_string('emptysummary', 'block_course_contents', $i);
                 }
                 $title = s($title);
-                $style = ($isvisible) ? '' : ' class="dimmed"';
                 $odd = $i % 2;
                 if ($i == $highlight) {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
                 } else {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
                 }
-                $text .= html_writer::link($link.$i,
-                            html_writer::tag('span', $i.' ', array('class' => 'section-number')).
-                            html_writer::tag('span', $title, array('class' => 'section-title')),
-                            array('class' => $isvisible ? '' : 'dimmed'));
+                $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
+                         html_writer::tag('span', $title, array('class' => 'section-title'));
+                if (!$displaysection or $displaysection != $i) {
+                    $text .= html_writer::link($link.$i, $title, array('class' => $isvisible ? '' : 'dimmed'));
+                } else {
+                    $text .= $title;
+                }
                 $text .= html_writer::end_tag('li');
             }
             $text .= html_writer::end_tag('ul');
