@@ -128,14 +128,13 @@ class block_course_contents extends block_base {
                 if (empty($section->name)) {
                     $summary = format_text($section->summary, $section->summaryformat,
                         array('para' => false, 'context' => $context));
-                    $title = $this->extract_title($summary);
+                    $title = format_string($this->extract_title($summary), true, array('context' => $context));
                 } else {
-                    $title = $section->name;
+                    $title = format_string($section->name, true, array('context' => $context));
                 }
                 if (empty($title)) {
                     $title = get_string('emptysummary', 'block_course_contents', $i);
                 }
-                $title = s($title);
                 $odd = $i % 2;
                 if ($i == $highlight) {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
