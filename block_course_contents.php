@@ -51,7 +51,9 @@ class block_course_contents extends block_base {
      * @return stdClass block content info
      */
     public function get_content() {
-        global $CFG, $USER, $DB;
+        global $CFG, $DB;
+
+        $current = optional_param('section', null, PARAM_INT);
 
         $highlight = 0;
 
@@ -68,12 +70,11 @@ class block_course_contents extends block_base {
         }
 
         $course = $this->page->course;
-        $context = get_context_instance(CONTEXT_COURSE, $course->id);
+        $context = context_course::instance($course->id);
 
         if ($course->format == 'weeks') {
             $highlight = ceil((time()-$course->startdate)/604800);
             $linktext = get_string('jumptocurrentweek', 'block_course_contents');
-            $sectionname = 'week';
 
         } else if ($course->format == 'scorm' or $course->format == 'social') {
             // this formats do not have sections at all, no need for this block there
@@ -83,31 +84,17 @@ class block_course_contents extends block_base {
             // anything else defaults to 'topics'
             $highlight = $course->marker;
             $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
-            $sectionname = 'topic';
         }
 
-        // Warning - hack ahead! Because this method is executed as a part of
-        // core_renderer->header() call, the course format plugin did not have a chance yet
-        // to update course_display table according the passed 'topic' or 'week' HTTP param.
-        // In order to achieve the same effect as in 1.9 (where the block content was populated
-        // after the format), we must observe the HTTP params directly here...
-
-        $displaysection = optional_param($sectionname, -1, PARAM_INT);  // 0 to show all, >0 show particular section
-
-        if ($displaysection != -1) {
-            // somebody just requests a change
-        } else if (isset($USER->display[$course->id])) {
-            $displaysection = $USER->display[$course->id];
-        } else {
-            $displaysection = course_set_display($course->id, 0);
-        }
-
-        // depending on whether there is just one section displayed or all sections
+        // depending on whether there should be just one section displayed or all sections
         // displayed, prepare the base URL to jump to
-        if ($displaysection) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&'.$sectionname.'=';
+        if ($course->coursedisplay == COURSE_DISPLAY_SINGLEPAGE) {
+            $link = '#section-';
+        } else if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
+            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&section=';
         } else {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'#section-';
+            debugging('Unsupported course display mode', DEBUG_DEVELOPER);
+            $link = '#section-';
         }
 
         $sql = "SELECT section, name, summary, summaryformat, visible
@@ -145,7 +132,7 @@ class block_course_contents extends block_base {
                 }
                 $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
                          html_writer::tag('span', $title, array('class' => 'section-title'));
-                if (!$displaysection or $displaysection != $i) {
+                if (is_null($current) or $i <> $current) {
                     $text .= html_writer::link($link.$i, $title, array('class' => $isvisible ? '' : 'dimmed'));
                 } else {
                     $text .= $title;
