@@ -23,6 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/course/lib.php');
+
 /**
  * Course contents block generates a table of course contents based on the
  * section descriptions
@@ -125,17 +127,16 @@ class block_course_contents extends block_base {
                 if (!$isvisible and !has_capability('moodle/course:update', $context)) {
                     continue;
                 }
-                if (empty($section->name)) {
+                if (!empty($section->name)) {
+                    $title = format_string($section->name, true, array('context' => $context));
+                } else {
                     $summary = format_text($section->summary, $section->summaryformat,
                         array('para' => false, 'context' => $context));
-                    $title = $this->extract_title($summary);
-                } else {
-                    $title = $section->name;
+                    $title = format_string($this->extract_title($summary), true, array('context' => $context));
+                    if (empty($title)) {
+                        $title = get_generic_section_name($course->format, $section);
+                    }
                 }
-                if (empty($title)) {
-                    $title = get_string('emptysummary', 'block_course_contents', $i);
-                }
-                $title = s($title);
                 $odd = $i % 2;
                 if ($i == $highlight) {
                     $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
