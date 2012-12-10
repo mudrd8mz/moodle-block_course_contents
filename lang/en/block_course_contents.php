@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['config_enumerate'] = 'Enumerate section titles';
+$string['config_enumerate_label'] = 'If enabled, the section number is displayed before the section title';
 $string['course_contents:addinstance'] = 'Add a new course contents block';
 $string['notusingsections'] = 'This course format does not use sections.';
 $string['pluginname'] = 'Course contents';

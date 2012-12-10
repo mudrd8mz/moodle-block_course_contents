@@ -108,8 +108,14 @@ class block_course_contents extends block_base {
             } else {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
-            $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
-                     html_writer::tag('span', $title, array('class' => 'section-title'));
+
+            if (empty($this->config) or is_null($this->config->enumerate) or !empty($this->config->enumerate)) {
+                $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
+                    html_writer::tag('span', $title, array('class' => 'section-title'));
+            } else {
+                $title = html_writer::tag('span', $title, array('class' => 'section-title'));
+            }
+
             if (is_null($selected) or $i <> $selected) {
                 $text .= html_writer::link($format->get_view_url($section), $title, array('class' => $section->visible ? '' : 'dimmed'));
             } else {
