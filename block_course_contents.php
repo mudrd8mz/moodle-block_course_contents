@@ -44,7 +44,7 @@ class block_course_contents extends block_base {
      * @return array
      */
     public function applicable_formats() {
-        return array('course-view-*' => true);
+        return array('site-index' => true, 'course-view-*' => true);
     }
 
     /**
