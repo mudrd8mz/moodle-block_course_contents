@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot.'/course/format/lib.php');
 
 /**
  * Course contents block generates a table of course contents based on the
@@ -51,15 +52,12 @@ class block_course_contents extends block_base {
      * @return stdClass block content info
      */
     public function get_content() {
-        global $CFG, $DB;
 
-        $current = optional_param('section', null, PARAM_INT);
-
-        $highlight = 0;
-
-        if ($this->content !== NULL) {
+        if (!is_null($this->content)) {
             return $this->content;
         }
+
+        $selected = optional_param('section', null, PARAM_INT);
 
         $this->content = new stdClass();
         $this->content->footer = '';
@@ -70,84 +68,57 @@ class block_course_contents extends block_base {
         }
 
         $course = $this->page->course;
+        $format = course_get_format($course);
+
+        if (!$format->uses_sections()) {
+            if (debugging()) {
+                $this->content->text = get_string('notusingsections', 'block_course_contents');
+            }
+            return $this->content;
+        }
+
+        $sections = $format->get_sections();
+
+        if (empty($sections)) {
+            return $this->content;
+        }
+
         $context = context_course::instance($course->id);
 
-        if ($course->format == 'weeks') {
-            $highlight = ceil((time()-$course->startdate)/604800);
-            $linktext = get_string('jumptocurrentweek', 'block_course_contents');
-
-        } else if ($course->format == 'scorm' or $course->format == 'social') {
-            // this formats do not have sections at all, no need for this block there
-            return $this->content;
-
-        } else {
-            // anything else defaults to 'topics'
-            $highlight = $course->marker;
-            $linktext = get_string('jumptocurrenttopic', 'block_course_contents');
-        }
-
-        // depending on whether there should be just one section displayed or all sections
-        // displayed, prepare the base URL to jump to
-        if ($course->coursedisplay == COURSE_DISPLAY_SINGLEPAGE) {
-            $link = '#section-';
-        } else if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
-            $link = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&section=';
-        } else {
-            debugging('Unsupported course display mode', DEBUG_DEVELOPER);
-            $link = '#section-';
-        }
-
-        $sql = "SELECT section, name, summary, summaryformat, visible
-                  FROM {course_sections}
-                 WHERE course = ? AND
-                       section < ?
-              ORDER BY section";
-
-        if ($sections = $DB->get_records_sql($sql, array($course->id, $course->numsections+1))) {
-            $text = html_writer::start_tag('ul', array('class' => 'section-list'));
-            foreach ($sections as $section) {
-                $i = $section->section;
-                if (!isset($sections[$i]) or ($i == 0)) {
-                    continue;
-                }
-                $isvisible = $sections[$i]->visible;
-                if (!$isvisible and !has_capability('moodle/course:update', $context)) {
-                    continue;
-                }
-                if (!empty($section->name)) {
-                    $title = format_string($section->name, true, array('context' => $context));
-                } else {
-                    $summary = format_text($section->summary, $section->summaryformat,
-                        array('para' => false, 'context' => $context));
-                    $title = format_string($this->extract_title($summary), true, array('context' => $context));
-                    if (empty($title)) {
-                        $title = get_generic_section_name($course->format, $section);
-                    }
-                }
-                $odd = $i % 2;
-                if ($i == $highlight) {
-                    $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
-                } else {
-                    $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
-                }
-                $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
-                         html_writer::tag('span', $title, array('class' => 'section-title'));
-                if (is_null($current) or $i <> $current) {
-                    $text .= html_writer::link($link.$i, $title, array('class' => $isvisible ? '' : 'dimmed'));
-                } else {
-                    $text .= $title;
-                }
-                $text .= html_writer::end_tag('li');
+        $text = html_writer::start_tag('ul', array('class' => 'section-list'));
+        $r = 0;
+        foreach ($sections as $section) {
+            $i = $section->section;
+            if (!$section->uservisible) {
+                continue;
             }
-            $text .= html_writer::end_tag('ul');
-            if ($highlight and isset($sections[$highlight])) {
-                $isvisible = $sections[$highlight]->visible;
-                if ($isvisible or has_capability('moodle/course:update', $context)) {
-                    $this->content->footer = html_writer::link($link.$highlight, $linktext,
-                            array('class' => $isvisible ? '' : 'dimmed'));
+            if (!empty($section->name)) {
+                $title = format_string($section->name, true, array('context' => $context));
+            } else {
+                $summary = format_text($section->summary, $section->summaryformat,
+                    array('para' => false, 'context' => $context));
+                $title = format_string($this->extract_title($summary), true, array('context' => $context));
+                if (empty($title)) {
+                    $title = $format->get_section_name($section);
                 }
             }
+            $odd = $r % 2;
+            if ($format->is_section_current($section)) {
+                $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
+            } else {
+                $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
+            }
+            $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
+                     html_writer::tag('span', $title, array('class' => 'section-title'));
+            if (is_null($selected) or $i <> $selected) {
+                $text .= html_writer::link($format->get_view_url($section), $title, array('class' => $section->visible ? '' : 'dimmed'));
+            } else {
+                $text .= $title;
+            }
+            $text .= html_writer::end_tag('li');
+            $r++;
         }
+        $text .= html_writer::end_tag('ul');
 
         $this->content->text = $text;
         return $this->content;

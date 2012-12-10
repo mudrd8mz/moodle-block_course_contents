@@ -26,6 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['course_contents:addinstance'] = 'Add a new course contents block';
+$string['notusingsections'] = 'This course format does not use sections.';
 $string['pluginname'] = 'Course contents';
-$string['jumptocurrenttopic'] = 'Go to current topic';
-$string['jumptocurrentweek'] = 'Go to current week';
