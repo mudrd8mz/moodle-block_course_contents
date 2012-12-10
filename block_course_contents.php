@@ -36,7 +36,16 @@ class block_course_contents extends block_base {
      * Initializes the block, called by the constructor
      */
     public function init() {
-        $this->title = get_string('pluginname', 'block_course_contents');
+        $this->title = get_string('config_blocktitle_default', 'block_course_contents');
+    }
+
+    /**
+     * Amend the block instance after it is loaded
+     */
+    public function specialization() {
+        if (!empty($this->config->blocktitle)) {
+            $this->title = $this->config->blocktitle;
+        }
     }
 
     /**

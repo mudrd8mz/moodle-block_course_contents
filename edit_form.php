@@ -35,10 +35,13 @@ class block_course_contents_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
 
-        // Section header title according to language file.
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'core_block'));
 
-        // A sample string variable with a default value.
+        $mform->addElement('text', 'config_blocktitle', get_string('config_blocktitle', 'block_course_contents'));
+        $mform->setDefault('config_blocktitle', '');
+        $mform->setType('config_blocktitle', PARAM_MULTILANG);
+        $mform->addHelpButton('config_blocktitle', 'config_blocktitle', 'block_course_contents');
+
         $mform->addElement('advcheckbox', 'config_enumerate', get_string('config_enumerate', 'block_course_contents'),
             get_string('config_enumerate_label', 'block_course_contents'));
         $mform->setDefault('config_enumerate', 1);
