@@ -16,16 +16,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the block strings
+ * Declares the block's capabilities
  *
- * @package    block_course_contents
- * @copyright  2009 David Mudrak <david@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     block_course_contents
+ * @category    access
+ * @copyright   2012 David Mudrak <david@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['course_contents:addinstance'] = 'Add a new course contents block';
-$string['pluginname'] = 'Course contents';
-$string['jumptocurrenttopic'] = 'Go to current topic';
-$string['jumptocurrentweek'] = 'Go to current week';
+$capabilities = array(
+
+    'block/course_contents:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ),
+);
