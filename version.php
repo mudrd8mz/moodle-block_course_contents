@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component  = 'block_course_contents';
-$plugin->release    = 'DEV';
-$plugin->version    = 2013012500;
-$plugin->requires   = 2013012500; // Moodle 2.5dev
-$plugin->maturity   = MATURITY_ALPHA;
+$plugin->release    = '2.5.0';
+$plugin->version    = 2013051400;
+$plugin->requires   = 2013051400; // Moodle 2.5.0
+$plugin->maturity   = MATURITY_STABLE;
