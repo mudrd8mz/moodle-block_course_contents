@@ -1,3 +1,10 @@
+v2.5.0
+======
+
+* No real changes, just tested against Moodle 2.5.0.
+* Confirmed that the Restrict access section setting is taking into account
+  correctly (issue #8).
+
 v2.4.1
 ======
 
