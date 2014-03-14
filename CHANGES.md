@@ -1,3 +1,9 @@
+v2.6.0
+======
+
+* Just a maintenance release tested against Moodle 2.6.2 with no modified
+  functionality.
+
 v2.5.0
 ======
 
