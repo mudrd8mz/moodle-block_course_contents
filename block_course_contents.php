@@ -123,7 +123,7 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            if (empty($this->config) or is_null($this->config->enumerate) or !empty($this->config->enumerate)) {
+            if (empty($this->config) or !isset($this->config->enumerate) or is_null($this->config->enumerate) or !empty($this->config->enumerate)) {
                 $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
                     html_writer::tag('span', $title, array('class' => 'section-title'));
             } else {
