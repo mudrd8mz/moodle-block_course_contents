@@ -1,3 +1,10 @@
+v3.0
+====
+
+* Version numbering scheme changed. No longer this plugin will have separate
+  branch for Moodle major version.
+* Bug #14 fixed.
+
 v2.6.0
 ======
 
