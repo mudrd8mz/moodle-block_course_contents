@@ -109,8 +109,9 @@ class block_course_contents extends block_base {
             if (!empty($section->name)) {
                 $title = format_string($section->name, true, array('context' => $context));
             } else {
-                $summary = format_text($section->summary, $section->summaryformat,
-                    array('para' => false, 'context' => $context));
+                $summary = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course',
+                    'section', $section->id);
+                $summary = format_text($summary, $section->summaryformat, array('para' => false, 'context' => $context));
                 $title = format_string($this->extract_title($summary), true, array('context' => $context));
                 if (empty($title)) {
                     $title = $format->get_section_name($section);
