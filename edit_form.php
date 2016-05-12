@@ -34,17 +34,34 @@ class block_course_contents_edit_form extends block_edit_form {
      * @param moodle_form $mform
      */
     protected function specific_definition($mform) {
+    
+        $config = get_config('block_course_contents');
+        
+        if($config->admin_lock_blocktitle == 1 AND $config->admin_lock_enumerate== 1 AND $config->admin_lock_defaultsectiontitle == 1) {
+        } // all possible seetings locked by admin setting
+        else {
+            $mform->addElement('header', 'configheader', get_string('blocksettings', 'core_block'));
+        }
 
-        $mform->addElement('header', 'configheader', get_string('blocksettings', 'core_block'));
+        if($config->admin_lock_blocktitle == 0) { //if not locked by admin
+            $mform->addElement('text', 'config_blocktitle', get_string('config_blocktitle', 'block_course_contents'));
+            $mform->setDefault('config_blocktitle', '');
+            $mform->setType('config_blocktitle', PARAM_MULTILANG);
+            $mform->addHelpButton('config_blocktitle', 'config_blocktitle', 'block_course_contents');
+        }
 
-        $mform->addElement('text', 'config_blocktitle', get_string('config_blocktitle', 'block_course_contents'));
-        $mform->setDefault('config_blocktitle', '');
-        $mform->setType('config_blocktitle', PARAM_MULTILANG);
-        $mform->addHelpButton('config_blocktitle', 'config_blocktitle', 'block_course_contents');
+        if($config->admin_lock_defaultsectiontitle == 0) { //if not locked by admin
+            $mform->addElement('advcheckbox', 'config_defaultsectiontitle', get_string('config_defaultsectiontitle', 'block_course_contents'),
+                get_string('config_defaultsectiontitle_label', 'block_course_contents'));
+            $mform->setDefault('config_defaultsectiontitle', $config->admin_defaultsectiontitle);
+            $mform->setType('config_defaultsectiontitle', PARAM_BOOL);
+        }
 
-        $mform->addElement('advcheckbox', 'config_enumerate', get_string('config_enumerate', 'block_course_contents'),
-            get_string('config_enumerate_label', 'block_course_contents'));
-        $mform->setDefault('config_enumerate', 1);
-        $mform->setType('config_enumerate', PARAM_BOOL);
+        if($config->admin_lock_enumerate== 0) { //if not locked by admin
+            $mform->addElement('advcheckbox', 'config_enumerate', get_string('config_enumerate', 'block_course_contents'),
+                get_string('config_enumerate_label', 'block_course_contents'));
+            $mform->setDefault('config_enumerate', 1);
+            $mform->setType('config_enumerate', PARAM_BOOL);
+        }
     }
 }
