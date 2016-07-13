@@ -47,6 +47,7 @@ class block_course_contents extends block_base {
             $this->title = $this->config->blocktitle;
         } else {
             $this->title = get_string('config_blocktitle_default', 'block_course_contents');
+            $this->title = get_config('course_contents', 'blocktitle_default');
         }
     }
 
@@ -124,7 +125,17 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            if (empty($this->config) or !isset($this->config->enumerate) or is_null($this->config->enumerate) or !empty($this->config->enumerate)) {
+            if (
+                (
+                    (
+                        empty($this->config)
+                        or !isset($this->config->enumerate)
+                        or is_null($this->config->enumerate)
+                    )
+                    and get_config('course_contents', 'enumerate_default')
+                )
+                or !empty($this->config->enumerate)
+            ) {
                 $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
                     html_writer::tag('span', $title, array('class' => 'section-title'));
             } else {
@@ -185,5 +196,9 @@ class block_course_contents extends block_base {
             }
         }
         return $t;
+    }
+
+    function has_config() {
+        return true;
     }
 }
