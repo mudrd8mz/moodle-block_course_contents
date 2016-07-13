@@ -46,7 +46,6 @@ class block_course_contents extends block_base {
         if (!empty($this->config->blocktitle)) {
             $this->title = $this->config->blocktitle;
         } else {
-            $this->title = get_string('config_blocktitle_default', 'block_course_contents');
             $this->title = get_config('course_contents', 'blocktitle_default');
         }
     }
