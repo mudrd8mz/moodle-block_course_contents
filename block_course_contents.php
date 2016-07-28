@@ -59,6 +59,15 @@ class block_course_contents extends block_base {
     }
 
     /**
+     * Does the block have a global settings.
+     *
+     * @return bool
+     */
+    public function has_config() {
+        return true;
+    }
+
+    /**
      * Populate this block's content object
      * @return stdClass block content info
      */
@@ -95,6 +104,7 @@ class block_course_contents extends block_base {
         }
 
         $context = context_course::instance($course->id);
+        $globalconfig = get_config('block_course_contents');
 
         $text = html_writer::start_tag('ul', array('class' => 'section-list'));
         $r = 0;
@@ -124,11 +134,36 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            if (empty($this->config) or !isset($this->config->enumerate) or is_null($this->config->enumerate) or !empty($this->config->enumerate)) {
-                $title = html_writer::tag('span', $i.' ', array('class' => 'section-number')).
-                    html_writer::tag('span', $title, array('class' => 'section-title'));
+            if ($i == 0) {
+                // Never enumerate the section number 0.
+                $enumerate = false;
+
+            } else if ($globalconfig->enumerate === 'forced_off') {
+                $enumerate = false;
+
+            } else if ($globalconfig->enumerate === 'forced_on') {
+                $enumerate = true;
+
+            } else if (empty($this->config) or !isset($this->config->enumerate)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->enumerate === 'optional_on') {
+                    $enumerate = true;
+                } else {
+                    $enumerate = false;
+                }
+
+            } else if (!empty($this->config->enumerate)) {
+                $enumerate = true;
+
             } else {
-                $title = html_writer::tag('span', $title, array('class' => 'section-title'));
+                $enumerate = false;
+            }
+
+            if ($enumerate) {
+                $title = html_writer::span($i, 'section-number').' '.html_writer::span($title, 'section-title');
+
+            } else {
+                $title = html_writer::span($title, 'section-title not-enumerated');
             }
 
             if (is_null($selected) or $i <> $selected) {
