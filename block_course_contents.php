@@ -59,6 +59,15 @@ class block_course_contents extends block_base {
     }
 
     /**
+     * Does the block have a global settings.
+     *
+     * @return bool
+     */
+    public function has_config() {
+        return true;
+    }
+
+    /**
      * Populate this block's content object
      * @return stdClass block content info
      */
