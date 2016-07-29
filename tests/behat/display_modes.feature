@@ -1,8 +1,4 @@
 @block @block_course_contents @javascript
-#
-# Note we need @javascript here only because there seems to be a bug in non-js mode
-# that Behat does not uncheck an advcheckbox field.
-#
 Feature: Configuring various display modes how the course sections are displayed
   In order to help students to navigate through the course
   As a teacher
@@ -22,22 +18,19 @@ Feature: Configuring various display modes how the course sections are displayed
     And I follow "Course 1"
     And I turn editing mode on
     # Rename the general section (the first click is needed in js mode only).
-    And I click on "Edit" "link" in the "li#section-0" "css_element"
-    And I click on "Edit section" "link" in the "li#section-0" "css_element"
+    And I click on "Edit summary" "link" in the "li#section-0" "css_element"
     And I set the following fields to these values:
       | Use default section name | 0             |
       | name                     | Welcome to C1 |
     And I press "Save changes"
     # Add a summary text to the topic 1 section.
-    And I click on "Edit" "link" in the "li#section-1" "css_element"
-    And I click on "Edit topic" "link" in the "li#section-1" "css_element"
+    And I click on "Edit summary" "link" in the "li#section-1" "css_element"
     And I set the following fields to these values:
       | Use default section name  | 1                 |
       | Summary                   | <h2>Unit One</h2> |
     And I press "Save changes"
     # Add both explicit name and a summary text to the topic 2 section.
-    And I click on "Edit" "link" in the "li#section-2" "css_element"
-    And I click on "Edit topic" "link" in the "li#section-2" "css_element"
+    And I click on "Edit summary" "link" in the "li#section-2" "css_element"
     And I set the following fields to these values:
       | Use default section name  | 0                 |
       | name                      | Topic Two         |
