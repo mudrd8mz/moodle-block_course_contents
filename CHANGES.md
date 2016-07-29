@@ -1,3 +1,9 @@
+v5.0
+====
+
+* All features and fixes included in the v4.0 release, just Behat tests
+  supported by Moodle 3.0 and 3.1.
+
 v4.0
 ====
 
