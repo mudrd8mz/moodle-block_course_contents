@@ -16,11 +16,11 @@
    id="svg2"
    inkscape:label="Pozadí"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="icon.svg"
-   inkscape:export-filename="/home/mudrd8mz/tmp/icon.png"
-   inkscape:export-xdpi="714.41998"
-   inkscape:export-ydpi="714.41998">
+   inkscape:export-filename="/home/mudrd8mz/www/mdk/m31/moodle/blocks/course_contents/pix/logo.png"
+   inkscape:export-xdpi="506.25"
+   inkscape:export-ydpi="506.25">
   <defs
      id="defs3">
     <linearGradient
@@ -40,16 +40,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="32"
-     inkscape:cx="6.0305127"
-     inkscape:cy="6.6331789"
+     inkscape:cx="5.49128"
+     inkscape:cy="11.966688"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:showpageshadow="true"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1680"
-     inkscape:window-height="1004"
+     inkscape:window-width="1920"
+     inkscape:window-height="1026"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1">
@@ -82,12 +82,12 @@
      id="layer1"
      transform="translate(0,-1036.3622)">
     <rect
-       style="color:#000000;fill:#999999;fill-opacity:1;stroke:#999999;stroke-width:0;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#999999;fill-opacity:1;stroke:#999999;stroke-width:0;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
        id="rect3754"
-       width="7.0000005"
-       height="4.0001392"
-       x="9"
-       y="1036.3621"
+       width="9"
+       height="3.9999826"
+       x="7"
+       y="1036.3622"
        rx="1.0001395"
        ry="1.0001396" />
     <use
@@ -107,38 +107,29 @@
        width="16"
        height="16" />
     <rect
-       style="color:#000000;fill:#999999;fill-opacity:1;stroke:#999999;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect3752"
-       width="7"
-       height="11.500017"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#999999;fill-opacity:1;stroke:#999999;stroke-width:0;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       id="rect3754-6"
+       width="5"
+       height="4.0000172"
        x="0"
        y="1036.3622"
-       rx="1.0000174"
-       ry="0.95835006" />
-    <rect
-       style="color:#000000;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect3762"
-       width="4.9884305"
-       height="2.5000174"
-       x="1.0115696"
-       y="1037.3622"
-       rx="0.50001734"
-       ry="0.5000174" />
+       rx="1.0025306"
+       ry="0.98593479" />
     <use
        x="0"
        y="0"
-       xlink:href="#rect3762"
-       id="use3770"
-       transform="translate(-1.1920929e-7,3.5000174)"
-       width="16"
-       height="16" />
+       xlink:href="#rect3754-6"
+       id="use4291"
+       transform="translate(0,5.9999952)"
+       width="100%"
+       height="100%" />
     <use
        x="0"
        y="0"
-       xlink:href="#use3770"
-       id="use3772"
-       transform="translate(0,3.5)"
-       width="16"
-       height="16" />
+       xlink:href="#use4291"
+       id="use4293"
+       transform="matrix(0.999998,0,0,1,4.9999949e-6,6)"
+       width="100%"
+       height="100%" />
   </g>
 </svg>
