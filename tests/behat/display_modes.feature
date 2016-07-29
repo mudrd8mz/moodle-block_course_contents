@@ -1,8 +1,4 @@
 @block @block_course_contents @javascript
-#
-# Note we need @javascript here only because there seems to be a bug in non-js mode
-# that Behat does not uncheck an advcheckbox field.
-#
 Feature: Configuring various display modes how the course sections are displayed
   In order to help students to navigate through the course
   As a teacher
