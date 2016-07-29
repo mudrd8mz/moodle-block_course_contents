@@ -116,17 +116,47 @@ class block_course_contents extends block_base {
             if (!$section->uservisible) {
                 continue;
             }
-            if (!empty($section->name)) {
-                $title = format_string($section->name, true, array('context' => $context));
+
+            if ($globalconfig->autotitle === 'forced_off') {
+                $autotitle = false;
+
+            } else if ($globalconfig->autotitle === 'forced_on') {
+                $autotitle = true;
+
+            } else if (empty($this->config) or !isset($this->config->autotitle)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->autotitle === 'optional_on') {
+                    $autotitle = true;
+                } else {
+                    $autotitle = false;
+                }
+
+            } else if (!empty($this->config->autotitle)) {
+                $autotitle = true;
+
             } else {
+                $autotitle = false;
+            }
+
+            $title = null;
+
+            if (!empty($section->name)) {
+                // If the section has explic title defined, it is used.
+                $title = format_string($section->name, true, array('context' => $context));
+
+            } else if ($autotitle) {
+                // Attempt to extract the title from the section summary.
                 $summary = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course',
                     'section', $section->id);
                 $summary = format_text($summary, $section->summaryformat, array('para' => false, 'context' => $context));
                 $title = format_string($this->extract_title($summary), true, array('context' => $context));
-                if (empty($title)) {
-                    $title = $format->get_section_name($section);
-                }
             }
+
+            // If at this point we have no title available, use the default one.
+            if (empty($title)) {
+                $title = $format->get_section_name($section);
+            }
+
             $odd = $r % 2;
             if ($format->is_section_current($section)) {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
