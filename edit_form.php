@@ -67,5 +67,32 @@ class block_course_contents_edit_form extends block_edit_form {
         }
 
         $mform->setType('config_enumerate', PARAM_BOOL);
+
+        if ($config->autotitle === 'forced_off') {
+            $mform->addElement('static', 'config_autotitle_info', get_string('config_autotitle', 'block_course_contents'),
+                get_string('config_autotitle_forced_off', 'block_course_contents'));
+            $mform->addHelpButton('config_autotitle_info', 'config_autotitle', 'block_course_contents');
+            $mform->addElement('hidden', 'config_autotitle');
+
+        } else if ($config->autotitle === 'forced_on') {
+            $mform->addElement('static', 'config_autotitle_info', get_string('config_autotitle', 'block_course_contents'),
+                get_string('config_autotitle_forced_on', 'block_course_contents'));
+            $mform->addHelpButton('config_autotitle_info', 'config_autotitle', 'block_course_contents');
+            $mform->addElement('hidden', 'config_autotitle');
+
+        } else {
+            $mform->addElement('advcheckbox', 'config_autotitle', get_string('config_autotitle', 'block_course_contents'),
+                get_string('config_autotitle_label', 'block_course_contents'));
+            $mform->addHelpButton('config_autotitle', 'config_autotitle', 'block_course_contents');
+
+            if ($config->autotitle === 'optional_on') {
+                $mform->setDefault('config_autotitle', 1);
+
+            } else {
+                $mform->setDefault('config_autotitle', 0);
+            }
+        }
+
+        $mform->setType('config_autotitle', PARAM_BOOL);
     }
 }

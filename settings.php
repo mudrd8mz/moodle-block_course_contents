@@ -40,4 +40,19 @@ if ($ADMIN->fulltree) {
         'optional_on',
         $enumerate
     ));
+
+    $autotitle = [
+        'forced_on' => get_string('config_autotitle_forced_on', 'block_course_contents'),
+        'optional_on' => get_string('config_autotitle_optional_on', 'block_course_contents'),
+        'optional_off' => get_string('config_autotitle_optional_off', 'block_course_contents'),
+        'forced_off' => get_string('config_autotitle_forced_off', 'block_course_contents'),
+    ];
+
+    $settings->add(new admin_setting_configselect(
+        'block_course_contents/autotitle',
+        get_string('config_autotitle', 'block_course_contents'),
+        get_string('config_autotitle_desc', 'block_course_contents'),
+        'optional_off',
+        $autotitle
+    ));
 }
