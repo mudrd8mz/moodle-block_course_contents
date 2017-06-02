@@ -5,7 +5,7 @@
 }
 
 .block_course_contents .section-item {
-    margin-bottom: 6pt;
+    margin-bottom: 6px;
 }
 
 .block_course_contents .section-item.current {
@@ -30,5 +30,5 @@
 
 .block_course_contents a.dimmed:link,
 .block_course_contents a.dimmed:visited {
-    color:#AAAAAA;
+    color: #aaa;
 }
