@@ -1,3 +1,11 @@
+v5.1
+====
+
+* Fixed support for Moodle 3.3 - topics and weeks format no longer provide the
+  numsections property and the block must not rely on it. Credit goes to
+  Nicolas Dunand.
+* Fixed Behat tests syntax for Moodle 3.3
+
 v5.0
 ====
 
