@@ -111,7 +111,8 @@ class block_course_contents extends block_base {
         $r = 0;
         foreach ($sections as $section) {
             $i = $section->section;
-            if ($i > $course->numsections) {
+            if (isset($course->numsections) && ($i > $course->numsections)) {
+                // Support for legacy formats that still provide numsections (see MDL-57769).
                 break;
             }
             if (!$section->uservisible) {
