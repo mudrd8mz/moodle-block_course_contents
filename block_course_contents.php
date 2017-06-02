@@ -28,8 +28,13 @@ require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/course/format/lib.php');
 
 /**
- * Course contents block generates a table of course contents based on the
- * section descriptions
+ * Defines the Course contents block behaviour.
+ *
+ * Course contents block generates a table of course contents based on each
+ * section title and/or summary.
+ *
+ * @copyright 2009 David Mudrak <david@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_course_contents extends block_base {
 

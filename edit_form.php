@@ -25,7 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Extends the block instance coinfiguration
+ * Extends the block instance configuration.
+ *
+ * @copyright 2012 David Mudrak <david@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_course_contents_edit_form extends block_edit_form {
 
