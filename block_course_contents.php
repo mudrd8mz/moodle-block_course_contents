@@ -166,7 +166,7 @@ class block_course_contents extends block_base {
 
             if ( ($i == 0) && (!empty($globalconfig->display_course_link)) ) {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item'));
-
+                $text .= html_writer::span('>', 'section-number') . ' ';
                 if (!empty($globalconfig->display_course_link_text)) {
                     $anchortext = $globalconfig->display_course_link_text;
                 } else {
@@ -183,7 +183,7 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            $enumeratesection0 = (!empty($globalconfig->enumeratesection0) ? true : false);
+            $enumeratesection0 = (!empty($globalconfig->enumerate_section_0) ? true : false);
 
             if ( ($i == 0)  && ($enumeratesection0 == false) ) {
                 // Never enumerate the section number 0 unless option has been set.
