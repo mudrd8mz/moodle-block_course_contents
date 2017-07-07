@@ -183,9 +183,9 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            $enumerate_section_0 = (!empty($globalconfig->enumerate_section_0) ? true : false);
+            $enumeratesection0 = (!empty($globalconfig->enumeratesection0) ? true : false);
 
-            if ( ($i == 0)  && ($enumerate_section_0 == false) ) {
+            if ( ($i == 0)  && ($enumeratesection0 == false) ) {
                 // Never enumerate the section number 0 unless option has been set.
                 $enumerate = false;
 
@@ -211,7 +211,7 @@ class block_course_contents extends block_base {
             }
 
             // If enumerating and showing section 0, then increment section number.
-            if ( ($enumerate == true) && ($enumerate_section_0 == true)) {
+            if ( ($enumerate == true) && ($enumeratesection0 == true)) {
                 $i++;
             }
 
