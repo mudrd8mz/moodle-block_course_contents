@@ -166,8 +166,9 @@ class block_course_contents extends block_base {
 
             if ( ($i == 0) && (!empty($globalconfig->display_course_link)) ) {
                 $sectionclass = 'section-item';
-                if  (empty($selected)) {
-                    $sectionclass .= ' current';
+
+                if ((!isset($selected)) && (empty($selected)) ) {
+                    $sectionclass .= ' current ' . $selected;
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
