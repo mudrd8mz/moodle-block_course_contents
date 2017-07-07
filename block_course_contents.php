@@ -164,6 +164,18 @@ class block_course_contents extends block_base {
                 $title = $format->get_section_name($section);
             }
 
+            if ( ($i == 0) && (!empty($globalconfig->display_course_link)) ) {
+                $text .= html_writer::start_tag('li', array('class' => 'section-item'));
+
+                if (!empty($globalconfig->display_course_link_text)) {
+                    $anchortext = $globalconfig->display_course_link_text;
+                } else {
+                    $anchortext = $course->shortname;
+                }
+                $text .= html_writer::link(course_get_url($course), $anchortext);
+                $text .= html_writer::end_tag('li');
+            }
+
             $odd = $r % 2;
             if ($format->is_section_current($section)) {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
@@ -171,8 +183,10 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            if ($i == 0) {
-                // Never enumerate the section number 0.
+            $enumerate_section_0 = (!empty($globalconfig->enumerate_section_0) ? true : false);
+
+            if ( ($i == 0)  && ($enumerate_section_0 == false) ) {
+                // Never enumerate the section number 0 unless option has been set.
                 $enumerate = false;
 
             } else if ($globalconfig->enumerate === 'forced_off') {
@@ -194,6 +208,11 @@ class block_course_contents extends block_base {
 
             } else {
                 $enumerate = false;
+            }
+
+            // If enumerating and showing section 0, then increment section number.
+            if ( ($enumerate == true) && ($enumerate_section_0 == true)) {
+                $i++;
             }
 
             if ($enumerate) {

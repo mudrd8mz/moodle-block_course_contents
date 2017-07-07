@@ -41,6 +41,21 @@ if ($ADMIN->fulltree) {
         $enumerate
     ));
 
+    // Enumerate section 0.
+    $settings->add(new admin_setting_configcheckbox('block_course_contents/enumerate_section_0',
+            get_string('config_enumerate_section_0', 'block_course_contents'),
+            get_string('config_enumerate_section_0_desc', 'block_course_contents'), 0));
+
+    // Display course page link.
+    $settings->add(new admin_setting_configcheckbox('block_course_contents/display_course_link',
+            get_string('config_display_course_link', 'block_course_contents'),
+            get_string('config_display_course_link_desc', 'block_course_contents'), 0));
+
+    // Course page link custom text.
+    $settings->add(new admin_setting_configtext('block_course_contents/display_course_link_text',
+                   new lang_string('config_display_course_link_text', 'block_course_contents'),
+                   new lang_string('config_display_course_link_text_desc', 'block_course_contents'), ''));
+
     $autotitle = [
         'forced_on' => get_string('config_autotitle_forced_on', 'block_course_contents'),
         'optional_on' => get_string('config_autotitle_optional_on', 'block_course_contents'),
