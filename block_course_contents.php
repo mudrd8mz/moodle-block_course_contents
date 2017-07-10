@@ -172,19 +172,25 @@ class block_course_contents extends block_base {
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
-                $text .= html_writer::span('>', 'section-number') . ' ';
+                $text .= html_writer::span('>', 'section-number');
                 if (!empty($globalconfig->display_course_link_text)) {
                     $anchortext = $globalconfig->display_course_link_text;
                 } else {
                     $anchortext = $course->shortname;
                 }
-                $text .= html_writer::link(course_get_url($course), $anchortext);
+
+                if ((!isset($selected)) && (empty($selected)) ) {
+                    $text .= '&nbsp; ' . $anchortext;
+                } else {
+                    $text .= '&nbsp; ' . html_writer::link(course_get_url($course), $anchortext);
+                }
+
                 $text .= html_writer::end_tag('li');
             }
 
             $odd = $r % 2;
-            if ($format->is_section_current($section)) {
-                $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
+            if (isset($selected) && $i == $selected) {
+                $text .= html_writer::start_tag('li', array('class' => 'section-item current r.$odd'));
             } else {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
@@ -217,13 +223,15 @@ class block_course_contents extends block_base {
             }
 
             $sectionnumber = $i;
+
             // If enumerating and showing section 0, then increment section number.
             if ( ($enumerate == true) && ($enumeratesection0 == true)) {
                 $sectionnumber++;
             }
 
             if ($enumerate) {
-                $title = html_writer::span($sectionnumber, 'section-number').' '.html_writer::span($title, 'section-title');
+                $title = html_writer::span($sectionnumber, 'section-number'). ' '
+                        . html_writer::span('&nbsp;' . $title, 'section-title');
 
             } else {
                 $title = html_writer::span($title, 'section-title not-enumerated');
