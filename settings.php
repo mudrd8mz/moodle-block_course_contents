@@ -42,14 +42,36 @@ if ($ADMIN->fulltree) {
     ));
 
     // Enumerate section 0.
-    $settings->add(new admin_setting_configcheckbox('block_course_contents/enumerate_section_0',
+    $enumeratesection0 = [
+            'forced_on' => get_string('config_enumerate_section_0_forced_on', 'block_course_contents'),
+            'optional_on' => get_string('config_enumerate_section_0_optional_on', 'block_course_contents'),
+            'optional_off' => get_string('config_enumerate_section_0_optional_off', 'block_course_contents'),
+            'forced_off' => get_string('config_enumerate_section_0_forced_off', 'block_course_contents'),
+    ];
+
+    $settings->add(new admin_setting_configselect(
+            'block_course_contents/enumerate_section_0',
             get_string('config_enumerate_section_0', 'block_course_contents'),
-            get_string('config_enumerate_section_0_desc', 'block_course_contents'), 0));
+            get_string('config_enumerate_section_0_desc', 'block_course_contents'),
+            'optional_off',
+            $enumeratesection0
+            ));
 
     // Display course page link.
-    $settings->add(new admin_setting_configcheckbox('block_course_contents/display_course_link',
+    $displaycourselink = [
+            'forced_on' => get_string('config_display_course_link_forced_on', 'block_course_contents'),
+            'optional_on' => get_string('config_display_course_link_optional_on', 'block_course_contents'),
+            'optional_off' => get_string('config_display_course_link_optional_off', 'block_course_contents'),
+            'forced_off' => get_string('config_display_course_link_forced_off', 'block_course_contents'),
+    ];
+
+    $settings->add(new admin_setting_configselect(
+            'block_course_contents/display_course_link',
             get_string('config_display_course_link', 'block_course_contents'),
-            get_string('config_display_course_link_desc', 'block_course_contents'), 0));
+            get_string('config_display_course_link_desc', 'block_course_contents'),
+            'optional_off',
+            $displaycourselink
+            ));
 
     // Course page link custom text.
     $settings->add(new admin_setting_configtext('block_course_contents/display_course_link_text',

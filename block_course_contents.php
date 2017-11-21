@@ -164,7 +164,30 @@ class block_course_contents extends block_base {
                 $title = $format->get_section_name($section);
             }
 
-            if ( ($i == 0) && (!empty($globalconfig->display_course_link)) ) {
+            // Check if we want to display a course link.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->display_course_link === 'forced_off') {
+                $displaycourselink = false;
+
+            } else if ($globalconfig->display_course_link === 'forced_on') {
+                $displaycourselink = true;
+
+            } else if (empty($this->config) or !isset($this->config->display_course_link)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->display_course_link === 'optional_on') {
+                    $displaycourselink = true;
+                } else {
+                    $displaycourselink = false;
+                }
+            } else if (!empty($this->config->display_course_link)) {
+                $displaycourselink = true;
+
+            } else {
+                $displaycourselink = false;
+
+            }
+
+            if (($i == 0) && ($displaycourselink)) {
                 $sectionclass = 'section-item';
 
                 if ((!isset($selected)) && (empty($selected)) ) {
@@ -173,7 +196,9 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
                 $text .= html_writer::span('>', 'section-number');
-                if (!empty($globalconfig->display_course_link_text)) {
+                if (!empty($this->config->display_course_link_text)) {
+                    $anchortext = $this->config->display_course_link_text;
+                } else if (!empty($globalconfig->display_course_link_text)) {
                     $anchortext = $globalconfig->display_course_link_text;
                 } else {
                     $anchortext = $course->shortname;
@@ -195,7 +220,24 @@ class block_course_contents extends block_base {
                 $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
             }
 
-            $enumeratesection0 = (!empty($globalconfig->enumerate_section_0) ? true : false);
+            // Check if we want to enumerate section 0.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->enumerate_section_0 === 'forced_off') {
+                $enumeratesection0 = false;
+            } else if ($globalconfig->enumerate_section_0 === 'forced_on') {
+                $enumeratesection0 = true;
+            } else if (empty($this->config) or !isset($this->config->enumerate_section_0 )) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->enumerate_section_0 === 'optional_on') {
+                    $enumeratesection0 = true;
+                } else {
+                    $enumeratesection0 = false;
+                }
+            } else if (!empty($this->config->enumerate_section_0 )) {
+                $enumeratesection0 = true;
+            } else {
+                $enumeratesection0 = false;
+            }
 
             if ( ($i == 0)  && ($enumeratesection0 == false) ) {
                 // Never enumerate the section number 0 unless option has been set.

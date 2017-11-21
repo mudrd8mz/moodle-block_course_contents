@@ -98,5 +98,65 @@ class block_course_contents_edit_form extends block_edit_form {
         }
 
         $mform->setType('config_autotitle', PARAM_BOOL);
+
+        // Enumerate section 0.
+        if ($config->enumerate_section_0 === 'forced_off') {
+            $mform->addElement('static', 'config_enumerate_section_0_info', get_string('config_enumerate_section_0',
+                    'block_course_contents'), get_string('config_enumerate_section_0_forced_off', 'block_course_contents'));
+            $mform->addHelpButton('config_enumerate_section_0_info', 'config_enumerate_section_0', 'block_course_contents');
+            $mform->addElement('hidden', 'config_enumerate_section_0');
+
+        } else if ($config->enumerate_section_0 === 'forced_on') {
+            $mform->addElement('static', 'config_enumerate_section_0_info', get_string('config_enumerate_section_0',
+                    'block_course_contents'), get_string('config_enumerate_section_0_forced_on', 'block_course_contents'));
+            $mform->addHelpButton('config_enumerate_section_0_info', 'config_enumerate_section_0', 'block_course_contents');
+            $mform->addElement('hidden', 'config_enumerate_section_0');
+
+        } else {
+            $mform->addElement('advcheckbox', 'config_enumerate_section_0', get_string('config_enumerate_section_0',
+                    'block_course_contents'), get_string('config_enumerate_section_0_desc', 'block_course_contents'));
+            $mform->addHelpButton('config_enumerate_section_0', 'config_enumerate_section_0', 'block_course_contents');
+
+            if ($config->enumerate_section_0 === 'optional_on') {
+                $mform->setDefault('config_enumerate_section_0', 1);
+
+            } else {
+                $mform->setDefault('config_enumerate_section_0', 0);
+            }
+        }
+        $mform->setType('config_enumerate_section_0', PARAM_BOOL);
+
+        // Display course page link.
+        if ($config->display_course_link === 'forced_off') {
+            $mform->addElement('static', 'config_display_course_link_info', get_string('config_display_course_link',
+                    'block_course_contents'), get_string('config_display_course_link_forced_off', 'block_course_contents'));
+            $mform->addHelpButton('config_display_course_link_info', 'config_display_course_link', 'block_course_contents');
+            $mform->addElement('hidden', 'config_display_course_link');
+
+        } else if ($config->display_course_link === 'forced_on') {
+            $mform->addElement('static', 'config_display_course_link_info', get_string('config_display_course_link',
+                    'block_course_contents'), get_string('config_display_course_link_forced_on', 'block_course_contents'));
+            $mform->addHelpButton('config_display_course_link_info', 'config_display_course_link', 'block_course_contents');
+            $mform->addElement('hidden', 'config_display_course_link');
+
+        } else {
+            $mform->addElement('advcheckbox', 'config_display_course_link', get_string('config_display_course_link',
+                    'block_course_contents'), get_string('config_display_course_link_desc', 'block_course_contents'));
+            $mform->addHelpButton('config_display_course_link', 'config_display_course_link', 'block_course_contents');
+
+            if ($config->display_course_link === 'optional_on') {
+                $mform->setDefault('config_display_course_link', 1);
+
+            } else {
+                $mform->setDefault('config_display_course_link', 0);
+            }
+        }
+        $mform->setType('config_display_course_link', PARAM_BOOL);
+
+        $mform->addElement('text', 'config_display_course_link_text',
+                get_string('config_display_course_link_text_desc', 'block_course_contents'));
+        $mform->setDefault('config_display_course_link_text', '');
+        $mform->setType('config_display_course_link_text', PARAM_RAW);
+
     }
 }
