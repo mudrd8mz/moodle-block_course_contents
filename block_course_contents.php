@@ -113,7 +113,6 @@ class block_course_contents extends block_base {
         $globalconfig = get_config('block_course_contents');
 
         $text = html_writer::start_tag('ul', array('class' => 'section-list'));
-        $r = 0;
         foreach ($sections as $section) {
             $i = $section->section;
             if (isset($course->numsections) && ($i > $course->numsections)) {
@@ -164,15 +163,87 @@ class block_course_contents extends block_base {
                 $title = $format->get_section_name($section);
             }
 
-            $odd = $r % 2;
-            if ($format->is_section_current($section)) {
-                $text .= html_writer::start_tag('li', array('class' => 'section-item current r'.$odd));
+            // Check if we want to display a course link.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->display_course_link === 'forced_off') {
+                $displaycourselink = false;
+
+            } else if ($globalconfig->display_course_link === 'forced_on') {
+                $displaycourselink = true;
+
+            } else if (empty($this->config) or !isset($this->config->display_course_link)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->display_course_link === 'optional_on') {
+                    $displaycourselink = true;
+                } else {
+                    $displaycourselink = false;
+                }
+            } else if (!empty($this->config->display_course_link)) {
+                $displaycourselink = true;
+
             } else {
-                $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
+                $displaycourselink = false;
+
             }
 
-            if ($i == 0) {
-                // Never enumerate the section number 0.
+            if (($i == 0) && ($displaycourselink)) {
+                $sectionclass = 'section-item';
+
+                if (empty($selected)) {
+                    $sectionclass .= ' selected';
+                }
+                $text .= html_writer::start_tag('li', array('class' => $sectionclass));
+
+                $text .= html_writer::span('&gt;', 'section-number');
+                if (!empty($this->config->display_course_link_text)) {
+                    $anchortext = $this->config->display_course_link_text;
+                } else if (!empty($globalconfig->display_course_link_text)) {
+                    $anchortext = $globalconfig->display_course_link_text;
+                } else {
+                    $anchortext = $course->shortname;
+                }
+
+                if (empty($selected)) {
+                    $text .= ' '.$anchortext;
+                } else {
+                    $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
+                }
+
+                $text .= html_writer::end_tag('li');
+            }
+
+            $sectionclass = 'section-item';
+
+            if (isset($selected) && $i == $selected) {
+                $sectionclass .= ' selected';
+            }
+
+            if ($format->is_section_current($section)) {
+                $sectionclass .= ' current';
+            }
+
+            $text .= html_writer::start_tag('li', array('class' => $sectionclass));
+
+            // Check if we want to enumerate section 0.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->enumerate_section_0 === 'forced_off') {
+                $enumeratesection0 = false;
+            } else if ($globalconfig->enumerate_section_0 === 'forced_on') {
+                $enumeratesection0 = true;
+            } else if (empty($this->config) or !isset($this->config->enumerate_section_0 )) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->enumerate_section_0 === 'optional_on') {
+                    $enumeratesection0 = true;
+                } else {
+                    $enumeratesection0 = false;
+                }
+            } else if (!empty($this->config->enumerate_section_0 )) {
+                $enumeratesection0 = true;
+            } else {
+                $enumeratesection0 = false;
+            }
+
+            if ( ($i == 0)  && ($enumeratesection0 == false) ) {
                 $enumerate = false;
 
             } else if ($globalconfig->enumerate === 'forced_off') {
@@ -196,8 +267,15 @@ class block_course_contents extends block_base {
                 $enumerate = false;
             }
 
+            $sectionnumber = $i;
+
+            // If enumerating and showing section 0, then increment section number.
+            if ($enumerate && $enumeratesection0) {
+                $sectionnumber++;
+            }
+
             if ($enumerate) {
-                $title = html_writer::span($i, 'section-number').' '.html_writer::span($title, 'section-title');
+                $title = html_writer::span($sectionnumber, 'section-number').' '.html_writer::span($title, 'section-title');
 
             } else {
                 $title = html_writer::span($title, 'section-title not-enumerated');
@@ -209,7 +287,6 @@ class block_course_contents extends block_base {
                 $text .= $title;
             }
             $text .= html_writer::end_tag('li');
-            $r++;
         }
         $text .= html_writer::end_tag('ul');
 

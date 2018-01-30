@@ -47,3 +47,20 @@ $string['config_enumerate_optional_on'] = 'Optional, enabled by default';
 $string['course_contents:addinstance'] = 'Add a new course contents block';
 $string['notusingsections'] = 'This course format does not use sections.';
 $string['pluginname'] = 'Course contents';
+
+$string['config_enumerate_section_0'] = 'Enumerate general section';
+$string['config_enumerate_section_0_desc'] = 'This setting controls the enumeration mode for the general section, also known as section 0.';
+$string['config_enumerate_section_0_help'] = 'Setting this option will enumerate from the first section, usually known as section 0 or general section.';
+$string['config_enumerate_section_0_label'] = 'Start enumerating from the general section.';
+
+$string['config_display_course_link'] = 'Course page link';
+$string['config_display_course_link_desc'] = 'Display course home page link at the top of all sections.';
+$string['config_display_course_link_forced_off'] = 'Disabled in all blocks';
+$string['config_display_course_link_forced_on'] = 'Enabled in all blocks';
+$string['config_display_course_link_optional_off'] = 'Optional, disabled by default';
+$string['config_display_course_link_optional_on'] = 'Optional, enabled by default';
+$string['config_display_course_link_help'] = 'This will display a link to the course home page above all course section links.';
+
+$string['config_display_course_link_text'] = 'Custom course page link text';
+$string['config_display_course_link_text_desc'] = 'Default value of the course home page link anchor text. If left empty, the course shortname will be used.';
+$string['config_display_course_link_text_help'] = 'Course home page link anchor text. If left empty, the site-level default value will be used, unless it is also empty. In that case, the course shortname will be used.';

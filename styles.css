@@ -8,12 +8,17 @@
     margin-bottom: 6px;
 }
 
+.block_course_contents .section-item.selected {
+    font-weight: bold;
+}
+
 .block_course_contents .section-item.current {
     font-weight: bold;
 }
 
 .block_course_contents .section-number {
     padding: 2px 4px;
+    margin-right: 5px;
     font-size: 80%;
     font-weight: bold;
     color: white;
@@ -24,8 +29,12 @@
     -webkit-border-radius: 3px 3px 3px 3px;
 }
 
-.block_course_contents .section-item.current .section-number {
+.block_course_contents .section-item.selected .section-number {
     background-color: #0070a8;
+}
+
+.block_course_contents .section-item.current .section-number {
+    background-color: #999;
 }
 
 .block_course_contents a.dimmed:link,
