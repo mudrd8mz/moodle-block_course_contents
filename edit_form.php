@@ -114,7 +114,7 @@ class block_course_contents_edit_form extends block_edit_form {
 
         } else {
             $mform->addElement('advcheckbox', 'config_enumerate_section_0', get_string('config_enumerate_section_0',
-                    'block_course_contents'), get_string('config_enumerate_section_0_desc', 'block_course_contents'));
+                    'block_course_contents'), get_string('config_enumerate_section_0_label', 'block_course_contents'));
             $mform->addHelpButton('config_enumerate_section_0', 'config_enumerate_section_0', 'block_course_contents');
 
             if ($config->enumerate_section_0 === 'optional_on') {
@@ -154,9 +154,9 @@ class block_course_contents_edit_form extends block_edit_form {
         $mform->setType('config_display_course_link', PARAM_BOOL);
 
         $mform->addElement('text', 'config_display_course_link_text',
-                get_string('config_display_course_link_text_desc', 'block_course_contents'));
+                get_string('config_display_course_link_text', 'block_course_contents'));
+        $mform->addHelpButton('config_display_course_link_text', 'config_display_course_link_text', 'block_course_contents');
         $mform->setDefault('config_display_course_link_text', '');
         $mform->setType('config_display_course_link_text', PARAM_RAW);
-
     }
 }

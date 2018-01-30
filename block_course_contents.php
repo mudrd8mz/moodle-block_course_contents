@@ -113,7 +113,6 @@ class block_course_contents extends block_base {
         $globalconfig = get_config('block_course_contents');
 
         $text = html_writer::start_tag('ul', array('class' => 'section-list'));
-        $r = 0;
         foreach ($sections as $section) {
             $i = $section->section;
             if (isset($course->numsections) && ($i > $course->numsections)) {
@@ -190,12 +189,12 @@ class block_course_contents extends block_base {
             if (($i == 0) && ($displaycourselink)) {
                 $sectionclass = 'section-item';
 
-                if ((!isset($selected)) && (empty($selected)) ) {
-                    $sectionclass .= ' current ' . $selected;
+                if (empty($selected)) {
+                    $sectionclass .= ' selected';
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
-                $text .= html_writer::span('>', 'section-number');
+                $text .= html_writer::span('&gt;', 'section-number');
                 if (!empty($this->config->display_course_link_text)) {
                     $anchortext = $this->config->display_course_link_text;
                 } else if (!empty($globalconfig->display_course_link_text)) {
@@ -204,21 +203,26 @@ class block_course_contents extends block_base {
                     $anchortext = $course->shortname;
                 }
 
-                if ((!isset($selected)) && (empty($selected)) ) {
-                    $text .= '&nbsp; ' . $anchortext;
+                if (empty($selected)) {
+                    $text .= ' '.$anchortext;
                 } else {
-                    $text .= '&nbsp; ' . html_writer::link(course_get_url($course), $anchortext);
+                    $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
                 }
 
                 $text .= html_writer::end_tag('li');
             }
 
-            $odd = $r % 2;
+            $sectionclass = 'section-item';
+
             if (isset($selected) && $i == $selected) {
-                $text .= html_writer::start_tag('li', array('class' => 'section-item current r.$odd'));
-            } else {
-                $text .= html_writer::start_tag('li', array('class' => 'section-item r'.$odd));
+                $sectionclass .= ' selected';
             }
+
+            if ($format->is_section_current($section)) {
+                $sectionclass .= ' current';
+            }
+
+            $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
             // Check if we want to enumerate section 0.  Checked forced status from global config first,
             // then check block instance settings.
@@ -240,7 +244,6 @@ class block_course_contents extends block_base {
             }
 
             if ( ($i == 0)  && ($enumeratesection0 == false) ) {
-                // Never enumerate the section number 0 unless option has been set.
                 $enumerate = false;
 
             } else if ($globalconfig->enumerate === 'forced_off') {
@@ -267,13 +270,12 @@ class block_course_contents extends block_base {
             $sectionnumber = $i;
 
             // If enumerating and showing section 0, then increment section number.
-            if ( ($enumerate == true) && ($enumeratesection0 == true)) {
+            if ($enumerate && $enumeratesection0) {
                 $sectionnumber++;
             }
 
             if ($enumerate) {
-                $title = html_writer::span($sectionnumber, 'section-number'). ' '
-                        . html_writer::span('&nbsp;' . $title, 'section-title');
+                $title = html_writer::span($sectionnumber, 'section-number').' '.html_writer::span($title, 'section-title');
 
             } else {
                 $title = html_writer::span($title, 'section-title not-enumerated');
@@ -285,7 +287,6 @@ class block_course_contents extends block_base {
                 $text .= $title;
             }
             $text .= html_writer::end_tag('li');
-            $r++;
         }
         $text .= html_writer::end_tag('ul');
 
