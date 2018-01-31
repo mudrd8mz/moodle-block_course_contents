@@ -147,7 +147,7 @@ class block_course_contents extends block_base {
             $title = null;
 
             if (!empty($section->name)) {
-                // If the section has explic title defined, it is used.
+                // If the section has explicit title defined, it is used.
                 $title = format_string($section->name, true, array('context' => $context));
 
             } else if ($autotitle) {
@@ -186,10 +186,13 @@ class block_course_contents extends block_base {
 
             }
 
+            // If currently processing section 0 and we want to display the course link,
+            // display the course link before displaying section 0.
             if (($i == 0) && ($displaycourselink)) {
                 $sectionclass = 'section-item';
 
-                if (empty($selected)) {
+                // Check if we are actually on the course homepage.
+                if ( ($selected != 0) && (empty($selected)) ) {
                     $sectionclass .= ' selected';
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
@@ -203,7 +206,7 @@ class block_course_contents extends block_base {
                     $anchortext = $course->shortname;
                 }
 
-                if (empty($selected)) {
+                if ( ($selected != 0) && (empty($selected)) ) {
                     $text .= ' '.$anchortext;
                 } else {
                     $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
