@@ -29,7 +29,7 @@ $string['config_autotitle_desc'] = 'If the section has no explicit title defined
 $string['config_autotitle_forced_off'] = 'Disabled in all blocks';
 $string['config_autotitle_forced_on'] = 'Enabled in all blocks';
 $string['config_autotitle_help'] = 'If the section has no explicit title defined, the block can attempt to extract the title from the section summary text.
-        
+
 If the summary starts with a heading, it will use such heading text. If the summary starts with a bold text, it will be used as a section title. If the summary consists of several paragraphs, the first one will be used.';
 $string['config_autotitle_label'] = 'Automatically extract title from the section summary text';
 $string['config_autotitle_optional_off'] = 'Optional, disabled by default';
