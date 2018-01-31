@@ -15,148 +15,324 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provides the {@link block_course_contents_edit_form} class.
+ * Provides the {@link block_course_contents} class.
  *
- * @package     block_course_contents
- * @copyright   2012 David Mudrak <david@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_course_contents
+ * @copyright  2009 David Mudrak <david@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot.'/course/format/lib.php');
+
 /**
- * Extends the block instance configuration.
+ * Defines the Course contents block behaviour.
  *
- * @copyright 2012 David Mudrak <david@moodle.com>
+ * Course contents block generates a table of course contents based on each
+ * section title and/or summary.
+ *
+ * @copyright 2009 David Mudrak <david@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_course_contents_edit_form extends block_edit_form {
-
+class block_course_contents extends block_base {
+    
     /**
-     * Defines fields to add to the settings form
-     *
-     * @param moodle_form $mform
+     * Initializes the block, called by the constructor
      */
-    protected function specific_definition($mform) {
-
-        $config = get_config('block_course_contents');
-
-        $mform->addElement('header', 'configheader', get_string('blocksettings', 'core_block'));
-
-        $mform->addElement('text', 'config_blocktitle', get_string('config_blocktitle', 'block_course_contents'));
-        $mform->setDefault('config_blocktitle', '');
-        $mform->setType('config_blocktitle', PARAM_MULTILANG);
-        $mform->addHelpButton('config_blocktitle', 'config_blocktitle', 'block_course_contents');
-
-        if ($config->enumerate === 'forced_off') {
-            $mform->addElement('static', 'config_enumerate_info', get_string('config_enumerate', 'block_course_contents'),
-                get_string('config_enumerate_forced_off', 'block_course_contents'));
-            $mform->addElement('hidden', 'config_enumerate');
-
-        } else if ($config->enumerate === 'forced_on') {
-            $mform->addElement('static', 'config_enumerate_info', get_string('config_enumerate', 'block_course_contents'),
-                get_string('config_enumerate_forced_on', 'block_course_contents'));
-            $mform->addElement('hidden', 'config_enumerate');
-
+    public function init() {
+        $this->title = get_string('pluginname', 'block_course_contents');
+    }
+    
+    /**
+     * Amend the block instance after it is loaded
+     */
+    public function specialization() {
+        if (!empty($this->config->blocktitle)) {
+            $this->title = $this->config->blocktitle;
         } else {
-            $mform->addElement('advcheckbox', 'config_enumerate', get_string('config_enumerate', 'block_course_contents'),
-                get_string('config_enumerate_label', 'block_course_contents'));
-
-            if ($config->enumerate === 'optional_on') {
-                $mform->setDefault('config_enumerate', 1);
-
+            $this->title = get_string('config_blocktitle_default', 'block_course_contents');
+        }
+    }
+    
+    /**
+     * Which page types this block may appear on
+     * @return array
+     */
+    public function applicable_formats() {
+        return array('site-index' => true, 'course-view-*' => true);
+    }
+    
+    /**
+     * Does the block have a global settings.
+     *
+     * @return bool
+     */
+    public function has_config() {
+        return true;
+    }
+    
+    /**
+     * Populate this block's content object
+     * @return stdClass block content info
+     */
+    public function get_content() {
+        
+        if (!is_null($this->content)) {
+            return $this->content;
+        }
+        
+        $selected = optional_param('section', null, PARAM_INT);
+        
+        $this->content = new stdClass();
+        $this->content->footer = '';
+        $this->content->text   = '';
+        
+        if (empty($this->instance)) {
+            return $this->content;
+        }
+        
+        $format = course_get_format($this->page->course);
+        $course = $format->get_course(); // Needed to have numsections property available.
+        
+        if (!$format->uses_sections()) {
+            if (debugging()) {
+                $this->content->text = get_string('notusingsections', 'block_course_contents');
+            }
+            return $this->content;
+        }
+        
+        $sections = $format->get_sections();
+        
+        if (empty($sections)) {
+            return $this->content;
+        }
+        
+        $context = context_course::instance($course->id);
+        $globalconfig = get_config('block_course_contents');
+        
+        $text = html_writer::start_tag('ul', array('class' => 'section-list'));
+        foreach ($sections as $section) {
+            $i = $section->section;
+            if (isset($course->numsections) && ($i > $course->numsections)) {
+                // Support for legacy formats that still provide numsections (see MDL-57769).
+                break;
+            }
+            if (!$section->uservisible) {
+                continue;
+            }
+            
+            if ($globalconfig->autotitle === 'forced_off') {
+                $autotitle = false;
+                
+            } else if ($globalconfig->autotitle === 'forced_on') {
+                $autotitle = true;
+                
+            } else if (empty($this->config) or !isset($this->config->autotitle)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->autotitle === 'optional_on') {
+                    $autotitle = true;
+                } else {
+                    $autotitle = false;
+                }
+                
+            } else if (!empty($this->config->autotitle)) {
+                $autotitle = true;
+                
             } else {
-                $mform->setDefault('config_enumerate', 0);
+                $autotitle = false;
+            }
+            
+            $title = null;
+            
+            if (!empty($section->name)) {
+                // If the section has explic title defined, it is used.
+                $title = format_string($section->name, true, array('context' => $context));
+                
+            } else if ($autotitle) {
+                // Attempt to extract the title from the section summary.
+                $summary = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course',
+                        'section', $section->id);
+                $summary = format_text($summary, $section->summaryformat, array('para' => false, 'context' => $context));
+                $title = format_string($this->extract_title($summary), true, array('context' => $context));
+            }
+            
+            // If at this point we have no title available, use the default one.
+            if (empty($title)) {
+                $title = $format->get_section_name($section);
+            }
+            
+            // Check if we want to display a course link.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->display_course_link === 'forced_off') {
+                $displaycourselink = false;
+                
+            } else if ($globalconfig->display_course_link === 'forced_on') {
+                $displaycourselink = true;
+                
+            } else if (empty($this->config) or !isset($this->config->display_course_link)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->display_course_link === 'optional_on') {
+                    $displaycourselink = true;
+                } else {
+                    $displaycourselink = false;
+                }
+            } else if (!empty($this->config->display_course_link)) {
+                $displaycourselink = true;
+                
+            } else {
+                $displaycourselink = false;
+                
+            }
+            
+            if (($i == 0) && ($displaycourselink)) {
+                $sectionclass = 'section-item';
+                
+                if (empty($selected)) {
+                    $sectionclass .= ' selected';
+                }
+                $text .= html_writer::start_tag('li', array('class' => $sectionclass));
+                
+                $text .= html_writer::span('&gt;', 'section-number');
+                if (!empty($this->config->display_course_link_text)) {
+                    $anchortext = $this->config->display_course_link_text;
+                } else if (!empty($globalconfig->display_course_link_text)) {
+                    $anchortext = $globalconfig->display_course_link_text;
+                } else {
+                    $anchortext = $course->shortname;
+                }
+                
+                if (empty($selected)) {
+                    $text .= ' '.$anchortext;
+                } else {
+                    $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
+                }
+                
+                $text .= html_writer::end_tag('li');
+            }
+            
+            $sectionclass = 'section-item';
+            
+            if (isset($selected) && $i == $selected) {
+                $sectionclass .= ' selected';
+            }
+            
+            if ($format->is_section_current($section)) {
+                $sectionclass .= ' current';
+            }
+            
+            $text .= html_writer::start_tag('li', array('class' => $sectionclass));
+            
+            // Check if we want to enumerate section 0.  Checked forced status from global config first,
+            // then check block instance settings.
+            if ($globalconfig->enumerate_section_0 === 'forced_off') {
+                $enumeratesection0 = false;
+            } else if ($globalconfig->enumerate_section_0 === 'forced_on') {
+                $enumeratesection0 = true;
+            } else if (empty($this->config) or !isset($this->config->enumerate_section_0 )) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->enumerate_section_0 === 'optional_on') {
+                    $enumeratesection0 = true;
+                } else {
+                    $enumeratesection0 = false;
+                }
+            } else if (!empty($this->config->enumerate_section_0 )) {
+                $enumeratesection0 = true;
+            } else {
+                $enumeratesection0 = false;
+            }
+            
+            if ( ($i == 0)  && ($enumeratesection0 == false) ) {
+                $enumerate = false;
+                
+            } else if ($globalconfig->enumerate === 'forced_off') {
+                $enumerate = false;
+                
+            } else if ($globalconfig->enumerate === 'forced_on') {
+                $enumerate = true;
+                
+            } else if (empty($this->config) or !isset($this->config->enumerate)) {
+                // Instance not configured, use the globally defined default value.
+                if ($globalconfig->enumerate === 'optional_on') {
+                    $enumerate = true;
+                } else {
+                    $enumerate = false;
+                }
+                
+            } else if (!empty($this->config->enumerate)) {
+                $enumerate = true;
+                
+            } else {
+                $enumerate = false;
+            }
+            
+            $sectionnumber = $i;
+            
+            // If enumerating and showing section 0, then increment section number.
+            if ($enumerate && $enumeratesection0) {
+                $sectionnumber++;
+            }
+            
+            if ($enumerate) {
+                $title = html_writer::span($sectionnumber, 'section-number').' '.html_writer::span($title, 'section-title');
+                
+            } else {
+                $title = html_writer::span($title, 'section-title not-enumerated');
+            }
+            
+            if (is_null($selected) or $i <> $selected) {
+                $text .= html_writer::link($format->get_view_url($section), $title, ['class' => $section->visible ? '' : 'dimmed']);
+            } else {
+                $text .= $title;
+            }
+            $text .= html_writer::end_tag('li');
+        }
+        $text .= html_writer::end_tag('ul');
+        
+        $this->content->text = $text;
+        return $this->content;
+    }
+    
+    
+    /**
+     * Given a section summary, exctract a text suitable as a section title
+     *
+     * @param string $summary Section summary as returned from database (no slashes)
+     * @return string Section title
+     */
+    private function extract_title($summary) {
+        global $CFG;
+        require_once(dirname(__FILE__).'/lib/simple_html_dom.php');
+        
+        $node = new simple_html_dom();
+        $node->load($summary);
+        return $this->node_plain_text($node);
+    }
+    
+    
+    /**
+     * Recursively find the first suitable plaintext from the HTML DOM.
+     *
+     * Internal private function called only from {@link extract_title()}
+     *
+     * @param simple_html_dom $node Current root node
+     * @return string
+     */
+    private function node_plain_text($node) {
+        if ($node->nodetype == HDOM_TYPE_TEXT) {
+            $t = trim($node->plaintext);
+            if (!empty($t)) {
+                return $t;
             }
         }
-
-        $mform->setType('config_enumerate', PARAM_BOOL);
-
-        if ($config->autotitle === 'forced_off') {
-            $mform->addElement('static', 'config_autotitle_info', get_string('config_autotitle', 'block_course_contents'),
-                get_string('config_autotitle_forced_off', 'block_course_contents'));
-            $mform->addHelpButton('config_autotitle_info', 'config_autotitle', 'block_course_contents');
-            $mform->addElement('hidden', 'config_autotitle');
-
-        } else if ($config->autotitle === 'forced_on') {
-            $mform->addElement('static', 'config_autotitle_info', get_string('config_autotitle', 'block_course_contents'),
-                get_string('config_autotitle_forced_on', 'block_course_contents'));
-            $mform->addHelpButton('config_autotitle_info', 'config_autotitle', 'block_course_contents');
-            $mform->addElement('hidden', 'config_autotitle');
-
-        } else {
-            $mform->addElement('advcheckbox', 'config_autotitle', get_string('config_autotitle', 'block_course_contents'),
-                get_string('config_autotitle_label', 'block_course_contents'));
-            $mform->addHelpButton('config_autotitle', 'config_autotitle', 'block_course_contents');
-
-            if ($config->autotitle === 'optional_on') {
-                $mform->setDefault('config_autotitle', 1);
-
-            } else {
-                $mform->setDefault('config_autotitle', 0);
+        $t = '';
+        foreach ($node->nodes as $n) {
+            $t = $this->node_plain_text($n);
+            if (!empty($t)) {
+                break;
             }
         }
-
-        $mform->setType('config_autotitle', PARAM_BOOL);
-
-        // Enumerate section 0.
-        if ($config->enumerate_section_0 === 'forced_off') {
-            $mform->addElement('static', 'config_enumerate_section_0_info', get_string('config_enumerate_section_0',
-                    'block_course_contents'), get_string('config_enumerate_section_0_forced_off', 'block_course_contents'));
-            $mform->addHelpButton('config_enumerate_section_0_info', 'config_enumerate_section_0', 'block_course_contents');
-            $mform->addElement('hidden', 'config_enumerate_section_0');
-
-        } else if ($config->enumerate_section_0 === 'forced_on') {
-            $mform->addElement('static', 'config_enumerate_section_0_info', get_string('config_enumerate_section_0',
-                    'block_course_contents'), get_string('config_enumerate_section_0_forced_on', 'block_course_contents'));
-            $mform->addHelpButton('config_enumerate_section_0_info', 'config_enumerate_section_0', 'block_course_contents');
-            $mform->addElement('hidden', 'config_enumerate_section_0');
-
-        } else {
-            $mform->addElement('advcheckbox', 'config_enumerate_section_0', get_string('config_enumerate_section_0',
-                    'block_course_contents'), get_string('config_enumerate_section_0_desc', 'block_course_contents'));
-            $mform->addHelpButton('config_enumerate_section_0', 'config_enumerate_section_0', 'block_course_contents');
-
-            if ($config->enumerate_section_0 === 'optional_on') {
-                $mform->setDefault('config_enumerate_section_0', 1);
-
-            } else {
-                $mform->setDefault('config_enumerate_section_0', 0);
-            }
-        }
-        $mform->setType('config_enumerate_section_0', PARAM_BOOL);
-
-        // Display course page link.
-        if ($config->display_course_link === 'forced_off') {
-            $mform->addElement('static', 'config_display_course_link_info', get_string('config_display_course_link',
-                    'block_course_contents'), get_string('config_display_course_link_forced_off', 'block_course_contents'));
-            $mform->addHelpButton('config_display_course_link_info', 'config_display_course_link', 'block_course_contents');
-            $mform->addElement('hidden', 'config_display_course_link');
-
-        } else if ($config->display_course_link === 'forced_on') {
-            $mform->addElement('static', 'config_display_course_link_info', get_string('config_display_course_link',
-                    'block_course_contents'), get_string('config_display_course_link_forced_on', 'block_course_contents'));
-            $mform->addHelpButton('config_display_course_link_info', 'config_display_course_link', 'block_course_contents');
-            $mform->addElement('hidden', 'config_display_course_link');
-
-        } else {
-            $mform->addElement('advcheckbox', 'config_display_course_link', get_string('config_display_course_link',
-                    'block_course_contents'), get_string('config_display_course_link_desc', 'block_course_contents'));
-            $mform->addHelpButton('config_display_course_link', 'config_display_course_link', 'block_course_contents');
-
-            if ($config->display_course_link === 'optional_on') {
-                $mform->setDefault('config_display_course_link', 1);
-
-            } else {
-                $mform->setDefault('config_display_course_link', 0);
-            }
-        }
-        $mform->setType('config_display_course_link', PARAM_BOOL);
-
-        $mform->addElement('text', 'config_display_course_link_text',
-                get_string('config_display_course_link_text_desc', 'block_course_contents'));
-        $mform->setDefault('config_display_course_link_text', '');
-        $mform->setType('config_display_course_link_text', PARAM_RAW);
-
+        return $t;
     }
 }
