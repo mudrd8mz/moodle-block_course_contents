@@ -192,7 +192,7 @@ class block_course_contents extends block_base {
                 $sectionclass = 'section-item';
 
                 // Check if we are actually on the course homepage.
-                if ( ($selected != 0) && (empty($selected)) ) {
+                if ( (!isset($selected)) && (empty($selected)) ) {
                     $sectionclass .= ' selected';
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
@@ -206,7 +206,7 @@ class block_course_contents extends block_base {
                     $anchortext = $course->shortname;
                 }
 
-                if ( ($selected != 0) && (empty($selected)) ) {
+                if ( (!isset($selected)) && (empty($selected)) ) {
                     $text .= ' '.$anchortext;
                 } else {
                     $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
