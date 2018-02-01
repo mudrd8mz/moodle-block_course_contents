@@ -190,7 +190,7 @@ class block_course_contents extends block_base {
             if (($i == 0) && ($displaycourselink)) {
                 $sectionclass = 'section-item';
 
-                if (empty($selected)) {
+                if ($selected === null) {
                     $sectionclass .= ' selected';
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
@@ -204,7 +204,7 @@ class block_course_contents extends block_base {
                     $anchortext = $course->shortname;
                 }
 
-                if (empty($selected)) {
+                if ($selected === null) {
                     $text .= ' '.$anchortext;
                 } else {
                     $text .= ' '.html_writer::link(course_get_url($course), $anchortext);
