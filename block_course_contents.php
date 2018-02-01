@@ -147,7 +147,7 @@ class block_course_contents extends block_base {
             $title = null;
 
             if (!empty($section->name)) {
-                // If the section has explic title defined, it is used.
+                // If the section has explicit title defined, it is used.
                 $title = format_string($section->name, true, array('context' => $context));
 
             } else if ($autotitle) {
@@ -186,6 +186,7 @@ class block_course_contents extends block_base {
 
             }
 
+            // If we want to display the course link, display it before displaying the section 0.
             if (($i == 0) && ($displaycourselink)) {
                 $sectionclass = 'section-item';
 
