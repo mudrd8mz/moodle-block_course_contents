@@ -1,3 +1,9 @@
+### 5.2.0 ###
+
+* Added option to enumarate the general section (aka section 0) too.
+* Added option to include a link to the course home page.
+* Credit goes to Manoj Solanki for contributing these features.
+
 ### 5.1.1 ###
 
 * Fixed the reported coding style violations.
