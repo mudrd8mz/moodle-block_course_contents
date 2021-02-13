@@ -73,6 +73,7 @@ jobs:
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker
+        continue-on-error: true # Fails due to https://github.com/moodlehq/moodle-local_moodlecheck/issues/66
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 

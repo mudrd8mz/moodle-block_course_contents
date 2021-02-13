@@ -19,6 +19,7 @@ namespace block_course_contents\privacy;
 /**
  * Privacy API implementation for the Course contents plugin.
  *
+ * @package    block_course_contents
  * @copyright  2021 David Mudrák <david@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

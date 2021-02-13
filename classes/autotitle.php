@@ -19,6 +19,7 @@ namespace block_course_contents;
 /**
  * Provides section autotitle functionality for the Course contents block
  *
+ * @package    block_course_contents
  * @copyright  2021 David Mudrák <david@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

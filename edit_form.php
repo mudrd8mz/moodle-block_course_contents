@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provides the {@link block_course_contents_edit_form} class.
+ * Provides the {@see block_course_contents_edit_form} class.
  *
  * @package     block_course_contents
  * @copyright   2012 David Mudrak <david@moodle.com>
