@@ -1,3 +1,4 @@
+# Note @javascript is needed here - see MDL-55386 for details (unchecking advcheckbox does not work).
 @block @block_course_contents @javascript
 Feature: Configuring various display modes how the course sections are displayed
   In order to help students to navigate through the course
