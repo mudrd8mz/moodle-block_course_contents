@@ -78,6 +78,7 @@ class block_course_contents extends block_base {
      * @return stdClass block content info
      */
     public function get_content() {
+        global $OUTPUT;
 
         if (!is_null($this->content)) {
             return $this->content;
@@ -112,7 +113,7 @@ class block_course_contents extends block_base {
         $context = context_course::instance($course->id);
         $globalconfig = get_config('block_course_contents');
 
-        $text = html_writer::start_tag('ul', array('class' => 'section-list'));
+        $text = html_writer::start_tag('ul', array('class' => 'section-list list-group'));
         foreach ($sections as $section) {
             $i = $section->section;
             if (isset($course->numsections) && ($i > $course->numsections)) {
@@ -188,14 +189,15 @@ class block_course_contents extends block_base {
 
             // If we want to display the course link, display it before displaying the section 0.
             if (($i == 0) && ($displaycourselink)) {
-                $sectionclass = 'section-item';
+                $sectionclass = 'section-item list-group-item';
 
                 if ($selected === null) {
-                    $sectionclass .= ' selected';
+                    $sectionclass .= ' selected active';
                 }
                 $text .= html_writer::start_tag('li', array('class' => $sectionclass));
 
-                $text .= html_writer::span('&gt;', 'section-number');
+                $text .= html_writer::span($OUTPUT->pix_icon('i/course', ''), 'section-number');
+
                 if (!empty($this->config->display_course_link_text)) {
                     $anchortext = $this->config->display_course_link_text;
                 } else if (!empty($globalconfig->display_course_link_text)) {
@@ -213,14 +215,17 @@ class block_course_contents extends block_base {
                 $text .= html_writer::end_tag('li');
             }
 
-            $sectionclass = 'section-item';
+            $sectionclass = 'section-item list-group-item';
+            $numberclass = 'badge badge-secondary';
 
             if (isset($selected) && $i == $selected) {
-                $sectionclass .= ' selected';
+                $sectionclass .= ' selected active';
+                $numberclass .= ' badge-light';
             }
 
             if ($format->is_section_current($section)) {
-                $sectionclass .= ' current';
+                $sectionclass .= ' current active';
+                $numberclass .= ' badge-light';
             }
 
             $text .= html_writer::start_tag('li', array('class' => $sectionclass));
@@ -276,7 +281,8 @@ class block_course_contents extends block_base {
             }
 
             if ($enumerate) {
-                $title = html_writer::span($sectionnumber, 'section-number').' '.html_writer::span($title, 'section-title');
+                $title = html_writer::span($sectionnumber, 'section-number ' . $numberclass) . ' ' .
+                    html_writer::span($title, 'section-title');
 
             } else {
                 $title = html_writer::span($title, 'section-title not-enumerated');
