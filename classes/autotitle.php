@@ -40,7 +40,9 @@ class autotitle {
         }
 
         $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
         $dom->loadHTML($summary);
+        libxml_clear_errors();
 
         return static::find_first_nonempty_text_node_value($dom);
     }

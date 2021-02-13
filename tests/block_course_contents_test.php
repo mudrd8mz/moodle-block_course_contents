@@ -47,6 +47,10 @@ class autotitle_test extends \advanced_testcase {
                 'summary' => 'Welcome to this course!',
                 'title' => 'Welcome to this course!',
             ],
+            'Invalid HTML' => [
+                'summary' => '</span>Hello<<h1>',
+                'title' => 'Hello',
+            ],
             'Heading' => [
                 'summary' => '<h3>Welcome!</h3><p>In this course, you will learn a lot.</p>',
                 'title' => 'Welcome!',
