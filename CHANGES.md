@@ -1,3 +1,12 @@
+### 6.0.0 ###
+
+* Privacy API implemented (block does not process any personal data).
+* Removed dependency on Simple HTML DOM Parser library (issue #28).
+* Removed custom CSS styles. Instead use standard BS4 classes to make the look and
+  feel closer to the standard drawer navigation in Boost.
+* Switching from Travis-CI to Github Actions.
+* Tested on Moodle 3.9 and 3.10.
+
 ### 5.2.0 ###
 
 * Added option to enumarate the general section (aka section 0) too.
