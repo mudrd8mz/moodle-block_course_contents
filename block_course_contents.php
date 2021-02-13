@@ -155,8 +155,11 @@ class block_course_contents extends block_base {
                 // Attempt to extract the title from the section summary.
                 $summary = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course',
                     'section', $section->id);
+                $summary = '<nolink>' . $summary . '</nolink>';
                 $summary = format_text($summary, $section->summaryformat, array('para' => false, 'context' => $context));
-                $title = format_string(\block_course_contents\autotitle::extract_title($summary), true, ['context' => $context]);
+                $title = \block_course_contents\autotitle::extract_title($summary);
+                $title = format_string($title, true, ['context' => $context]);
+                unset($summary);
             }
 
             // If at this point we have no title available, use the default one.
