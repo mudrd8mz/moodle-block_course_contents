@@ -1,7 +1,7 @@
 Course contents block
 =====================
 
-[![Build status](https://travis-ci.org/mudrd8mz/moodle-block_course_contents.svg?branch=master)](https://travis-ci.org/mudrd8mz/moodle-block_course_contents)
+![Moodle Plugin CI](https://github.com/mudrd8mz/moodle-block_course_contents/workflows/Moodle%20Plugin%20CI/badge.svg)
 
 Course contents block is a plugin for Moodle that displays a list of all
 visible sections (such as topics or weeks) in the course. Clicking at a link
