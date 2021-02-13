@@ -155,7 +155,7 @@ class block_course_contents extends block_base {
                 $summary = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course',
                     'section', $section->id);
                 $summary = format_text($summary, $section->summaryformat, array('para' => false, 'context' => $context));
-                $title = format_string($this->extract_title($summary), true, array('context' => $context));
+                $title = format_string(\block_course_contents\autotitle::extract_title($summary), true, ['context' => $context]);
             }
 
             // If at this point we have no title available, use the default one.
@@ -293,47 +293,5 @@ class block_course_contents extends block_base {
 
         $this->content->text = $text;
         return $this->content;
-    }
-
-
-    /**
-     * Given a section summary, exctract a text suitable as a section title
-     *
-     * @param string $summary Section summary as returned from database (no slashes)
-     * @return string Section title
-     */
-    private function extract_title($summary) {
-        global $CFG;
-        require_once(dirname(__FILE__).'/lib/simple_html_dom.php');
-
-        $node = new simple_html_dom();
-        $node->load($summary);
-        return $this->node_plain_text($node);
-    }
-
-
-    /**
-     * Recursively find the first suitable plaintext from the HTML DOM.
-     *
-     * Internal private function called only from {@link extract_title()}
-     *
-     * @param simple_html_dom $node Current root node
-     * @return string
-     */
-    private function node_plain_text($node) {
-        if ($node->nodetype == HDOM_TYPE_TEXT) {
-            $t = trim($node->plaintext);
-            if (!empty($t)) {
-                return $t;
-            }
-        }
-        $t = '';
-        foreach ($node->nodes as $n) {
-            $t = $this->node_plain_text($n);
-            if (!empty($t)) {
-                break;
-            }
-        }
-        return $t;
     }
 }
