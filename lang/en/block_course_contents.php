@@ -64,3 +64,5 @@ $string['config_display_course_link_help'] = 'This will display a link to the co
 $string['config_display_course_link_text'] = 'Custom course page link text';
 $string['config_display_course_link_text_desc'] = 'Default value of the course home page link anchor text. If left empty, the course shortname will be used.';
 $string['config_display_course_link_text_help'] = 'Course home page link anchor text. If left empty, the site-level default value will be used, unless it is also empty. In that case, the course shortname will be used.';
+
+$string['privacy:metadata'] = 'Course contents does not store any personal data';
