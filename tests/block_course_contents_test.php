@@ -79,6 +79,15 @@ class autotitle_test extends \advanced_testcase {
                 'summary' => 'Hello  <br> students',
                 'title' => 'Hello',
             ],
+            'Multi-byte' => [
+                'summary' => "\u{a0}µ déjà\u{a0}ěščřžýáíé &nbsp; \u{a0}",
+                'title' => "µ déjà\u{a0}ěščřžýáíé",
+            ],
+            'Non-breakable spaces' => [
+                'summary' => '<h2>&nbsp;<span style="font-family:tahoma">Lesson 4: Your first game &nbsp;' . "\xC2\xA0" .
+                    "\xc2\xa0" . '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span> </h2>',
+                'title' => 'Lesson 4: Your first game',
+            ],
         ];
     }
 }

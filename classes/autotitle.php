@@ -33,15 +33,13 @@ class autotitle {
      */
     public static function extract_title(string $summary): string {
 
-        $summary = trim($summary);
-
         if ($summary === '') {
             return '';
         }
 
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $dom->loadHTML($summary);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $summary);
         libxml_clear_errors();
 
         return static::find_first_nonempty_text_node_value($dom);
@@ -59,7 +57,7 @@ class autotitle {
     public static function find_first_nonempty_text_node_value(\DOMNode $node): string {
 
         if ($node->nodeType == XML_TEXT_NODE) {
-            $text = trim($node->textContent);
+            $text = (string) preg_replace('/^\s+|\s+$/u', '', $node->textContent);
 
             if ($text !== '') {
                 return $text;
