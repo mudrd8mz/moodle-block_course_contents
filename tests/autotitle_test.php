@@ -118,7 +118,7 @@ class autotitle_test extends \advanced_testcase {
             ],
             'Invalid HTML4 Test 2' => [
                 'summary' => '<div><<span>Text</div>',
-                'potentialtitles' => ['Text', '<Text'],
+                'potentialtitles' => ['Text', '<'],
             ],
         ];
     }
