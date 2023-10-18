@@ -33,7 +33,10 @@ class autotitle_test extends \advanced_testcase {
      * @param string $title
      */
     public function test_extract_title(string $summary, string $title) {
-        $this->assertEquals($title, autotitle::extract_title($summary));
+        $errors = [];
+        $result = autotitle::extract_title($summary, $errors);
+        $this->assertEmpty($errors);
+        $this->assertEquals($title, $result);
     }
 
     /**
@@ -46,10 +49,6 @@ class autotitle_test extends \advanced_testcase {
             'Plain text' => [
                 'summary' => 'Welcome to this course!',
                 'title' => 'Welcome to this course!',
-            ],
-            'Invalid HTML' => [
-                'summary' => '</span>Hello<<h1>',
-                'title' => 'Hello',
             ],
             'Heading' => [
                 'summary' => '<h3>Welcome!</h3><p>In this course, you will learn a lot.</p>',
@@ -87,6 +86,39 @@ class autotitle_test extends \advanced_testcase {
                 'summary' => '<h2>&nbsp;<span style="font-family:tahoma">Lesson 4: Your first game &nbsp;' . "\xC2\xA0" .
                     "\xc2\xa0" . '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span> </h2>',
                 'title' => 'Lesson 4: Your first game',
+            ],
+        ];
+    }
+
+    /**
+     * Test extracting invalid title from the summary HTML text.
+     * The tested method uses libxml and the output can vary between versions.
+     * This also applies to errors, so we cannot reliably test for them.
+     * Note that despite the invalid HTML, the method will still return a useful title.
+     * 
+     * @dataProvider extract_invalid_title_data
+     * @param string $summary
+     * @param array $potentialtitles
+     */
+    public function test_extract_invalid_title(string $summary, array $potentialtitles) {
+        $result = autotitle::extract_title($summary);
+        $this->assertContains($result, $potentialtitles);
+    }
+
+    /**
+     * Provides data for {@see self::test_extract_invalid_title()}.
+     *
+     * @return array
+     */
+    public function extract_invalid_title_data(): array {
+        return [
+            'Invalid HTML4 Test 1' => [
+                'summary' => '</span>Hello<<h1>',
+                'potentialtitles' => ['Hello', 'Hello<'],
+            ],
+            'Invalid HTML4 Test 2' => [
+                'summary' => '<div><<span>Text</div>',
+                'potentialtitles' => ['Text', '<'],
             ],
         ];
     }

@@ -29,9 +29,10 @@ class autotitle {
      * Extract suitable title from the HTML section summary text
      *
      * @param string $summary
+     * @param array $errors (passed by reference)
      * @return string
      */
-    public static function extract_title(string $summary): string {
+    public static function extract_title(string $summary, &$errors = []): string {
 
         if ($summary === '') {
             return '';
@@ -40,6 +41,7 @@ class autotitle {
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $summary);
+        $errors = libxml_get_errors();
         libxml_clear_errors();
 
         return static::find_first_nonempty_text_node_value($dom);
@@ -57,6 +59,7 @@ class autotitle {
     public static function find_first_nonempty_text_node_value(\DOMNode $node): string {
 
         if ($node->nodeType == XML_TEXT_NODE) {
+            // We use preg_replace() instead of trim() to remove non-breaking spaces.
             $text = (string) preg_replace('/^\s+|\s+$/u', '', $node->textContent);
 
             if ($text !== '') {
