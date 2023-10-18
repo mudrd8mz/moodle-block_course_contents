@@ -93,6 +93,7 @@ class autotitle_test extends \advanced_testcase {
     /**
      * Test extracting invalid title from the summary HTML text.
      * The tested method uses libxml and the output can vary between versions.
+     * This also applies to errors, so we cannot reliably test for them.
      * Note that despite the invalid HTML, the method will still return a useful title.
      * 
      * @dataProvider extract_invalid_title_data
@@ -100,9 +101,7 @@ class autotitle_test extends \advanced_testcase {
      * @param array $potentialtitles
      */
     public function test_extract_invalid_title(string $summary, array $potentialtitles) {
-        $errors = [];
-        $result = autotitle::extract_title($summary, $errors);
-        $this->assertNotEmpty($errors);
+        $result = autotitle::extract_title($summary);
         $this->assertContains($result, $potentialtitles);
     }
 
